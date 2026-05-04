@@ -16,19 +16,15 @@
 }
 html,body{width:100%;min-height:100%;background:var(--bg);font-family:'Share Tech Mono',monospace;color:#fff;}
 
-/* ── GATE ── */
 #gate{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;}
-#gate-inner{text-align:center;}
-.gate-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.8rem;letter-spacing:.1em;color:var(--m);text-shadow:0 0 20px var(--m);margin-bottom:.5rem;}
+.gate-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.8rem;letter-spacing:.1em;color:var(--m);text-shadow:0 0 20px var(--m);margin-bottom:.5rem;text-align:center;}
 .gate-sub{font-size:.72rem;letter-spacing:.25em;color:rgba(255,255,255,.3);}
 .gate-btn{margin-top:1.5rem;display:inline-flex;align-items:center;gap:.7rem;background:rgba(88,101,242,.2);border:1px solid rgba(88,101,242,.5);border-radius:8px;padding:.8rem 1.6rem;font-family:'Share Tech Mono',monospace;font-size:.8rem;letter-spacing:.15em;color:#7289da;cursor:pointer;transition:background .2s,box-shadow .2s;}
 .gate-btn:hover{background:rgba(88,101,242,.35);box-shadow:0 0 20px rgba(88,101,242,.4);}
 .gate-denied{color:var(--m);font-size:.78rem;letter-spacing:.2em;text-align:center;margin-top:1rem;display:none;}
 
-/* ── APP ── */
 #app{display:none;min-height:100vh;}
 
-/* ── TOPBAR ── */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(4,0,10,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.7rem 1.8rem;display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;}
 .topbar-logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:.95rem;letter-spacing:.18em;color:var(--m);text-shadow:0 0 10px var(--m);}
 .topbar-sep{color:rgba(255,255,255,.15);}
@@ -36,15 +32,11 @@ html,body{width:100%;min-height:100%;background:var(--bg);font-family:'Share Tec
 .topbar-user{margin-left:auto;display:flex;align-items:center;gap:.7rem;}
 .topbar-avatar{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(157,77,255,.5);}
 .topbar-name{font-size:.68rem;letter-spacing:.12em;color:rgba(255,255,255,.6);}
-.topbar-logout{background:none;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.3);font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.15em;padding:.3rem .7rem;border-radius:4px;cursor:pointer;transition:all .2s;}
-.topbar-logout:hover{border-color:var(--m);color:var(--m);}
-.topbar-main-link{font-size:.62rem;letter-spacing:.18em;color:rgba(255,255,255,.25);text-decoration:none;border:1px solid rgba(255,255,255,.1);padding:.28rem .7rem;border-radius:4px;transition:all .2s;}
-.topbar-main-link:hover{border-color:var(--c);color:var(--c);}
+.topbar-btn{background:none;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.3);font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.15em;padding:.3rem .7rem;border-radius:4px;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;}
+.topbar-btn:hover{border-color:var(--c);color:var(--c);}
 
-/* ── CONTENT ── */
-.content{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+.content{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 5rem;}
 
-/* ── STATS ── */
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--color,var(--c)),transparent);}
@@ -52,18 +44,15 @@ html,body{width:100%;min-height:100%;background:var(--bg);font-family:'Share Tec
 .stat-num{font-family:'Orbitron',sans-serif;font-weight:900;font-size:2rem;color:var(--color,var(--c));text-shadow:0 0 14px var(--color,var(--c));line-height:1;}
 .stat-label{font-size:.65rem;letter-spacing:.28em;color:rgba(255,255,255,.35);margin-top:.4rem;text-transform:uppercase;}
 
-/* ── TABS ── */
 .tabs{display:flex;gap:0;margin-bottom:1.5rem;border-radius:8px;overflow:hidden;border:1px solid var(--border);width:fit-content;}
 .tab-btn{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;padding:.6rem 1.3rem;background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;transition:all .2s;border-right:1px solid var(--border);}
 .tab-btn:last-child{border-right:none;}
 .tab-btn.active{background:rgba(0,255,255,.1);color:var(--c);}
 .tab-btn:hover:not(.active){background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);}
 
-/* ── PANELS ── */
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
 
-/* ── TABLE TOOLS ── */
 .section-hdr{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;flex-wrap:wrap;}
 .section-hdr h2{font-family:'Orbitron',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.1em;color:#fff;}
 .count-badge{font-size:.62rem;letter-spacing:.15em;padding:.2rem .6rem;border-radius:999px;border:1px solid var(--border);color:rgba(255,255,255,.35);}
@@ -74,55 +63,52 @@ html,body{width:100%;min-height:100%;background:var(--bg);font-family:'Share Tec
 .search-input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:.35rem .7rem .35rem 1.8rem;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:#fff;width:200px;outline:none;transition:border-color .2s;}
 .search-input:focus{border-color:var(--c);}
 .search-input::placeholder{color:rgba(255,255,255,.2);}
-.search-icon{position:absolute;left:.55rem;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.25);font-size:.7rem;pointer-events:none;}
+.search-icon{position:absolute;left:.55rem;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.25);pointer-events:none;}
 
-/* ── TABLE ── */
 .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);}
 table{width:100%;border-collapse:collapse;}
 thead tr{background:rgba(255,255,255,.04);}
 th{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:.75rem 1rem;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
-td{font-size:.76rem;color:rgba(255,255,255,.68);padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;max-width:300px;}
+td{font-size:.76rem;color:rgba(255,255,255,.68);padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;max-width:280px;}
 td.mono{font-family:'Share Tech Mono',monospace;font-size:.72rem;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(255,255,255,.015);}
 tr.hidden-row{display:none;}
-.cell-text{white-space:pre-wrap;word-break:break-word;line-height:1.6;color:rgba(255,255,255,.62);max-height:4.5em;overflow:hidden;cursor:pointer;transition:max-height .3s ease;position:relative;}
-.cell-text.expanded{max-height:none;}
-.cell-text:not(.expanded)::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1.2em;background:linear-gradient(transparent,rgba(4,0,10,.8));}
+
+.cell-clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;line-height:1.6;color:rgba(255,255,255,.62);word-break:break-word;}
+.cell-clamp.exp{display:block;-webkit-line-clamp:unset;}
 .cell-dim{color:rgba(255,255,255,.28);font-size:.67rem;}
 .chip-list{display:flex;flex-wrap:wrap;gap:.35rem;}
 .chip-sm{font-size:.58rem;letter-spacing:.1em;padding:.2rem .5rem;border-radius:4px;border:1px solid rgba(0,255,255,.3);color:rgba(0,255,255,.7);background:rgba(0,255,255,.06);}
 .empty-state{text-align:center;padding:3rem;color:rgba(255,255,255,.22);font-size:.76rem;letter-spacing:.2em;}
-.copy-btn{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.25);font-family:'Share Tech Mono',monospace;font-size:.58rem;padding:.15rem .4rem;border-radius:3px;cursor:pointer;transition:all .15s;margin-left:.4rem;}
+
+.copy-btn{background:none;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.28);font-family:'Share Tech Mono',monospace;font-size:.56rem;padding:.12rem .38rem;border-radius:3px;cursor:pointer;transition:all .15s;margin-left:.4rem;vertical-align:middle;}
 .copy-btn:hover{border-color:var(--c);color:var(--c);}
-.copy-btn.copied{border-color:var(--g);color:var(--g);}
+.copy-btn.ok{border-color:var(--g);color:var(--g);}
 
-/* ── STATUS ── */
-.status-sel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.65);font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.1em;padding:.25rem .5rem;border-radius:4px;cursor:pointer;transition:border-color .2s;outline:none;}
-.status-sel:hover{border-color:var(--c);}
+.status-sel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.65);font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.08em;padding:.25rem .5rem;border-radius:4px;cursor:pointer;outline:none;transition:border-color .2s;}
 .status-sel:focus{border-color:var(--c);}
-.badge-pendiente{color:var(--y);border-color:rgba(255,230,0,.4);}
-.badge-revisado{color:var(--c);border-color:rgba(0,255,255,.4);}
-.badge-contactado{color:var(--g);border-color:rgba(87,242,135,.4);}
-.badge-rechazado{color:var(--m);border-color:rgba(255,0,255,.4);}
+.st-pendiente{color:var(--y);}
+.st-revisado{color:var(--c);}
+.st-contactado{color:var(--g);}
+.st-rechazado{color:var(--m);}
 
-/* ── REALTIME ── */
-.realtime-dot{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 6px var(--c);display:inline-block;margin-right:.4rem;animation:rtPulse 1.5s ease-in-out infinite;}
-@keyframes rtPulse{0%,100%{opacity:1}50%{opacity:.25}}
+.realtime-dot{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 6px var(--c);display:inline-block;margin-right:.4rem;animation:rtP 1.5s ease-in-out infinite;}
+@keyframes rtP{0%,100%{opacity:1}50%{opacity:.25}}
 .realtime-label{font-size:.62rem;letter-spacing:.2em;color:rgba(0,255,255,.5);}
-.new-badge{display:inline-block;background:rgba(255,0,255,.15);border:1px solid rgba(255,0,255,.4);border-radius:999px;font-size:.55rem;letter-spacing:.12em;padding:.12rem .45rem;color:var(--m);margin-left:.4rem;animation:newPop .4s cubic-bezier(.34,1.56,.64,1);}
-@keyframes newPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.discord-link{color:#7289da;text-decoration:none;}
-.discord-link:hover{text-decoration:underline;}
+.new-badge{display:inline-block;background:rgba(255,0,255,.15);border:1px solid rgba(255,0,255,.4);border-radius:999px;font-size:.55rem;letter-spacing:.12em;padding:.12rem .45rem;color:var(--m);margin-left:.4rem;animation:nP .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes nP{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.link{color:#7289da;text-decoration:none;}
+.link:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
 
 <div id="gate">
-  <div id="gate-inner">
+  <div style="text-align:center;">
     <div class="gate-title">WZ ADMIN</div>
     <div class="gate-sub">// ACCESO RESTRINGIDO //</div>
-    <button class="gate-btn" onclick="doLogin()">
+    <button class="gate-btn" id="login-btn">
       <svg width="20" height="14" viewBox="0 0 22 16" fill="none"><path d="M18.59 1.37A18.1 18.1 0 0014.2.04a.07.07 0 00-.07.03c-.18.33-.39.76-.53 1.1a16.7 16.7 0 00-5.19 0A11.3 11.3 0 007.87.07a.07.07 0 00-.07-.03A18.1 18.1 0 003.41 1.37a.06.06 0 00-.03.03C.5 5.75-.3 10 .09 14.2a.07.07 0 00.03.05 18.2 18.2 0 005.49 2.8.07.07 0 00.08-.03c.42-.58.8-1.2 1.12-1.85a.07.07 0 00-.04-.1 12 12 0 01-1.72-.83.07.07 0 010-.12l.34-.27a.07.07 0 01.07-.01c3.61 1.66 7.52 1.66 11.09 0a.07.07 0 01.07.01l.34.27a.07.07 0 010 .12 11.3 11.3 0 01-1.72.82.07.07 0 00-.04.1c.33.65.71 1.27 1.12 1.86a.07.07 0 00.08.03 18.2 18.2 0 005.5-2.8.07.07 0 00.02-.05c.46-4.87-.77-9.09-3.28-12.83a.06.06 0 00-.03-.03z" fill="#7289da"/></svg>
       Continuar con Discord
     </button>
@@ -139,13 +125,12 @@ tr.hidden-row{display:none;}
       <span class="realtime-dot"></span><span class="realtime-label">LIVE</span>
       <img id="admin-avatar" class="topbar-avatar" src="" alt="" style="display:none;">
       <span id="admin-name" class="topbar-name"></span>
-      <a href="/" class="topbar-main-link">← Web</a>
-      <button class="topbar-logout" onclick="doLogout()">salir</button>
+      <a href="/" class="topbar-btn">← Web</a>
+      <button id="logout-btn" class="topbar-btn">salir</button>
     </div>
   </div>
 
   <div class="content">
-
     <div class="stats-row">
       <div class="stat-card" style="--color:var(--c)" onclick="switchTab('feedback')">
         <div class="stat-num" id="stat-feedback">—</div>
@@ -172,113 +157,96 @@ tr.hidden-row{display:none;}
       <button class="tab-btn" onclick="switchTab('testers')">Testers</button>
     </div>
 
-    <!-- FEEDBACK -->
     <div class="tab-panel active" id="tab-feedback">
       <div class="section-hdr">
-        <h2>Feedback</h2>
-        <span class="count-badge" id="count-feedback">0</span>
+        <h2>Feedback</h2><span class="count-badge" id="count-feedback">0</span>
         <div class="hdr-actions">
           <div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" type="text" placeholder="Buscar..." oninput="filterTable('tbody-feedback',this.value)"></div>
           <button class="icon-btn" onclick="exportCSV('feedback')">↓ CSV</button>
           <button class="icon-btn" onclick="loadAll()">↻</button>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Mensaje</th><th>Discord</th><th>Fecha</th></tr></thead>
-          <tbody id="tbody-feedback"><tr><td colspan="4" class="empty-state">Cargando...</td></tr></tbody>
-        </table>
-      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Mensaje</th><th>Discord</th><th>Discord ID</th><th>Fecha</th></tr></thead>
+        <tbody id="tbody-feedback"><tr><td colspan="5" class="empty-state">Cargando...</td></tr></tbody>
+      </table></div>
     </div>
 
-    <!-- SUGERENCIAS -->
     <div class="tab-panel" id="tab-sugerencias">
       <div class="section-hdr">
-        <h2>Sugerencias</h2>
-        <span class="count-badge" id="count-sugerencias">0</span>
+        <h2>Sugerencias</h2><span class="count-badge" id="count-sugerencias">0</span>
         <div class="hdr-actions">
           <div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" type="text" placeholder="Buscar..." oninput="filterTable('tbody-sugerencias',this.value)"></div>
           <button class="icon-btn" onclick="exportCSV('sugerencias')">↓ CSV</button>
           <button class="icon-btn" onclick="loadAll()">↻</button>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Implementación</th><th>Modo de juego</th><th>Mapa</th><th>General</th><th>Discord</th><th>Fecha</th></tr></thead>
-          <tbody id="tbody-sugerencias"><tr><td colspan="7" class="empty-state">Cargando...</td></tr></tbody>
-        </table>
-      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Implementación</th><th>Modo</th><th>Mapa</th><th>General</th><th>Discord</th><th>Fecha</th></tr></thead>
+        <tbody id="tbody-sugerencias"><tr><td colspan="7" class="empty-state">Cargando...</td></tr></tbody>
+      </table></div>
     </div>
 
-    <!-- POSTULACIONES -->
     <div class="tab-panel" id="tab-postulaciones">
       <div class="section-hdr">
-        <h2>Postulaciones</h2>
-        <span class="count-badge" id="count-postulaciones">0</span>
+        <h2>Postulaciones</h2><span class="count-badge" id="count-postulaciones">0</span>
         <div class="hdr-actions">
           <div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" type="text" placeholder="Buscar..." oninput="filterTable('tbody-postulaciones',this.value)"></div>
           <button class="icon-btn" onclick="exportCSV('postulaciones')">↓ CSV</button>
           <button class="icon-btn" onclick="loadAll()">↻</button>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Roblox</th><th>Discord</th><th>Discord ID</th><th>Habilidades</th><th>Contribución</th><th>Portfolio</th><th>Estado</th><th>Fecha</th></tr></thead>
-          <tbody id="tbody-postulaciones"><tr><td colspan="8" class="empty-state">Cargando...</td></tr></tbody>
-        </table>
-      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Roblox</th><th>Discord</th><th>Discord ID</th><th>Habilidades</th><th>Descripción</th><th>Portfolio</th><th>Estado</th><th>Fecha</th></tr></thead>
+        <tbody id="tbody-postulaciones"><tr><td colspan="9" class="empty-state">Cargando...</td></tr></tbody>
+      </table></div>
     </div>
 
-    <!-- TESTERS -->
     <div class="tab-panel" id="tab-testers">
       <div class="section-hdr">
-        <h2>Testers Registrados</h2>
-        <span class="count-badge" id="count-testers">0</span>
+        <h2>Testers</h2><span class="count-badge" id="count-testers">0</span>
         <div class="hdr-actions">
           <div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" type="text" placeholder="Buscar..." oninput="filterTable('tbody-testers',this.value)"></div>
           <button class="icon-btn" onclick="exportCSV('testers')">↓ CSV</button>
           <button class="icon-btn" onclick="loadAll()">↻</button>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Roblox</th><th>Discord</th><th>Discord ID numérico</th><th>User ID Supabase</th><th>Fecha</th></tr></thead>
-          <tbody id="tbody-testers"><tr><td colspan="5" class="empty-state">Cargando...</td></tr></tbody>
-        </table>
-      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Roblox</th><th>Discord</th><th>Discord ID numérico</th><th>Fecha</th></tr></thead>
+        <tbody id="tbody-testers"><tr><td colspan="5" class="empty-state">Cargando...</td></tr></tbody>
+      </table></div>
     </div>
-
-  </div><!-- /content -->
-</div><!-- /app -->
+  </div>
+</div>
 
 <script>
-  var SUPABASE_URL = 'https://ifzxejhttrnkgdawyigx.supabase.co';
+  var SUPABASE_URL      = 'https://ifzxejhttrnkgdawyigx.supabase.co';
   var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlmenhlamh0dHJua2dkYXd5aWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NTczMTUsImV4cCI6MjA5MzQzMzMxNX0.Eie8Akgw06JWpo8G18P04jJonxH7AQFEA__Nb10vD-M';
+  var OWNER_USERNAMES   = ['.breadd_', 'breadd', 'josue', 'josuebb'];
 
-  // Owner usernames allowed into this panel
-  var OWNER_USERNAMES = ['.breadd_', 'breadd', 'josue', 'josuebb'];
-
-  var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var sb        = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   var adminUser = null;
+  var cache     = { feedback: [], sugerencias: [], postulaciones: [], testers: [] };
 
-  // Raw data cache for CSV export
-  var _cache = { feedback: [], sugerencias: [], postulaciones: [], testers: [] };
+  // ── WIRING ────────────────────────────────────────────────────────────────────
+
+  document.getElementById('login-btn').onclick  = doLogin;
+  document.getElementById('logout-btn').onclick = doLogout;
 
   // ── AUTH ──────────────────────────────────────────────────────────────────────
 
   function isOwner(user) {
     if (!user) return false;
-    var meta = user.user_metadata || {};
-    var name = ((meta.custom_claims && meta.custom_claims.global_name) ||
-                meta.full_name || meta.name || meta.user_name ||
-                meta.preferred_username || '').toLowerCase().replace(/\s+/g,'');
-    return OWNER_USERNAMES.some(function(u){ return name.includes(u.toLowerCase()); });
+    var m = user.user_metadata || {};
+    var n = ((m.custom_claims && m.custom_claims.global_name) ||
+              m.full_name || m.name || m.user_name || m.preferred_username || '')
+              .toLowerCase().replace(/\s+/g, '');
+    return OWNER_USERNAMES.some(function(u) { return n.includes(u.toLowerCase()); });
   }
 
-  async function init() {
-    // Use onAuthStateChange as single source of truth.
-    // INITIAL_SESSION fires on page load (handles localStorage session + OAuth redirect exchange).
-    // No separate getSession() needed — eliminates the race condition that caused slow/double auth.
+  function init() {
+    // INITIAL_SESSION fires on load (covers both localStorage session and OAuth redirect).
+    // No separate getSession() — prevents the race condition / double-auth issue.
     sb.auth.onAuthStateChange(function(event, session) {
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         if (session) { handleSession(session); return; }
@@ -293,7 +261,7 @@ tr.hidden-row{display:none;}
     adminUser = session.user;
     if (!isOwner(adminUser)) {
       document.getElementById('gate-denied').style.display = 'block';
-      document.querySelector('.gate-btn').style.display = 'none';
+      document.getElementById('login-btn').style.display   = 'none';
       return;
     }
     showApp(adminUser);
@@ -301,19 +269,22 @@ tr.hidden-row{display:none;}
 
   function showApp(user) {
     document.getElementById('gate').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    var meta   = user.user_metadata || {};
-    var name   = (meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || 'Admin';
-    var avatar = meta.avatar_url || '';
+    document.getElementById('app').style.display  = 'block';
+    var m = user.user_metadata || {};
+    var name   = (m.custom_claims && m.custom_claims.global_name) || m.full_name || m.user_name || 'Admin';
+    var avatar = m.avatar_url || '';
     document.getElementById('admin-name').textContent = name;
-    if (avatar) { var img = document.getElementById('admin-avatar'); img.src = avatar; img.style.display = 'inline-block'; }
+    if (avatar) {
+      var img = document.getElementById('admin-avatar');
+      img.src = avatar; img.style.display = 'inline-block';
+    }
     loadAll();
     subscribeRealtime();
   }
 
   function showGate() {
     document.getElementById('gate').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
+    document.getElementById('app').style.display  = 'none';
   }
 
   function doLogin() {
@@ -328,15 +299,16 @@ tr.hidden-row{display:none;}
   // ── TABS ──────────────────────────────────────────────────────────────────────
 
   function switchTab(name) {
-    var names = ['feedback','sugerencias','postulaciones','testers'];
-    document.querySelectorAll('.tab-btn').forEach(function(b,i){ b.classList.toggle('active', names[i] === name); });
-    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.toggle('active', p.id === 'tab-' + name); });
+    var order = ['feedback','sugerencias','postulaciones','testers'];
+    document.querySelectorAll('.tab-btn').forEach(function(b, i) { b.classList.toggle('active', order[i] === name); });
+    document.querySelectorAll('.tab-panel').forEach(function(p)   { p.classList.toggle('active', p.id === 'tab-' + name); });
   }
 
-  // ── LOAD DATA ─────────────────────────────────────────────────────────────────
+  // ── UTILS ─────────────────────────────────────────────────────────────────────
 
-  async function loadAll() {
-    await Promise.all([loadFeedback(), loadSugerencias(), loadPostulaciones(), loadTesters()]);
+  function esc(s) {
+    if (s === null || s === undefined) return '<span class="cell-dim">—</span>';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
   function fmt(d) {
@@ -346,242 +318,243 @@ tr.hidden-row{display:none;}
            dt.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
   }
 
-  function esc(str) {
-    if (str === null || str === undefined) return '<span class="cell-dim">—</span>';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Renders a Discord numeric ID cell with a copy button
+  // Uses data-id attribute on button so no inline escaping needed
+  function pidCell(id) {
+    if (!id) return '<span class="cell-dim">—</span>';
+    return '<span style="font-size:.7rem;font-family:\'Share Tech Mono\',monospace">' + esc(id) + '</span>' +
+           '<button class="copy-btn" data-copy="' + esc(id) + '" title="Copiar Discord ID numérico">⧉</button>';
   }
 
-  function expandCell(el) { el.classList.toggle('expanded'); }
+  // Attach copy handler via delegation — no inline onclick, no escaping hell
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    var val = btn.getAttribute('data-copy');
+    if (!val) return;
+    navigator.clipboard.writeText(val).then(function() {
+      btn.textContent = '✓'; btn.classList.add('ok');
+      setTimeout(function() { btn.textContent = '⧉'; btn.classList.remove('ok'); }, 1500);
+    });
+  });
+
+  // Expand/collapse long cells via delegation
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('.cell-clamp');
+    if (el) el.classList.toggle('exp');
+  });
+
+  // Status dropdown via delegation
+  document.addEventListener('change', function(e) {
+    var sel = e.target.closest('.status-sel');
+    if (!sel) return;
+    var id  = sel.getAttribute('data-row-id');
+    var val = sel.value;
+    sel.className = 'status-sel st-' + val;
+    sb.from('postulaciones').update({ status: val }).eq('id', id).then(function(r) {
+      if (r.error) console.warn('Status update failed:', r.error.message);
+    });
+  });
+
+  // ── LOAD DATA ─────────────────────────────────────────────────────────────────
+
+  async function loadAll() {
+    await Promise.all([loadFeedback(), loadSugerencias(), loadPostulaciones(), loadTesters()]);
+  }
+
+  function setStats(table, count) {
+    ['stat-','count-'].forEach(function(p) {
+      var el = document.getElementById(p + table);
+      if (el) el.textContent = count;
+    });
+  }
 
   async function loadFeedback() {
-    var res = await sb.from('feedback').select('*').order('created_at',{ascending:false});
+    var res = await sb.from('feedback').select('*').order('created_at', { ascending: false });
     var rows = res.data || [];
-    _cache.feedback = rows;
-    document.getElementById('stat-feedback').textContent = rows.length;
-    document.getElementById('count-feedback').textContent = rows.length;
+    cache.feedback = rows;
+    setStats('feedback', rows.length);
     var tbody = document.getElementById('tbody-feedback');
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Sin registros aún</td></tr>'; return; }
-    tbody.innerHTML = rows.map(function(r,i){
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Sin registros aún</td></tr>'; return; }
+    tbody.innerHTML = rows.map(function(r, i) {
       return '<tr>' +
         '<td class="cell-dim mono">' + (i+1) + '</td>' +
-        '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.texto) + '</div></td>' +
-        '<td class="cell-dim mono">' + esc(r.discord_username) +
-          (r.discord_provider_id ? '<br><span style="font-size:.58rem;opacity:.45;">' + esc(r.discord_provider_id) + '<button class=\"copy-btn\" onclick=\"copyText('' + r.discord_provider_id + '\',this)\">⧉</button></span>' : '') +
-        '</td>' +
+        '<td><div class="cell-clamp">' + esc(r.texto) + '</div></td>' +
+        '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
+        '<td class="mono">' + pidCell(r.discord_provider_id) + '</td>' +
         '<td class="cell-dim mono" style="white-space:nowrap">' + fmt(r.created_at) + '</td>' +
         '</tr>';
     }).join('');
   }
 
   async function loadSugerencias() {
-    var res = await sb.from('sugerencias').select('*').order('created_at',{ascending:false});
+    var res = await sb.from('sugerencias').select('*').order('created_at', { ascending: false });
     var rows = res.data || [];
-    _cache.sugerencias = rows;
-    document.getElementById('stat-sugerencias').textContent = rows.length;
-    document.getElementById('count-sugerencias').textContent = rows.length;
+    cache.sugerencias = rows;
+    setStats('sugerencias', rows.length);
     var tbody = document.getElementById('tbody-sugerencias');
     if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Sin registros aún</td></tr>'; return; }
-    tbody.innerHTML = rows.map(function(r,i){
+    tbody.innerHTML = rows.map(function(r, i) {
       return '<tr>' +
         '<td class="cell-dim mono">' + (i+1) + '</td>' +
-        '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q1) + '</div></td>' +
-        '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q2) + '</div></td>' +
-        '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q3) + '</div></td>' +
-        '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q4) + '</div></td>' +
-        '<td class="cell-dim mono">' + esc(r.discord_username) +
-          (r.discord_provider_id ? '<br><span style="font-size:.58rem;opacity:.45;">' + esc(r.discord_provider_id) + '<button class=\"copy-btn\" onclick=\"copyText('' + r.discord_provider_id + '\',this)\">⧉</button></span>' : '') +
-        '</td>' +
+        '<td><div class="cell-clamp">' + esc(r.q1) + '</div></td>' +
+        '<td><div class="cell-clamp">' + esc(r.q2) + '</div></td>' +
+        '<td><div class="cell-clamp">' + esc(r.q3) + '</div></td>' +
+        '<td><div class="cell-clamp">' + esc(r.q4) + '</div></td>' +
+        '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
         '<td class="cell-dim mono" style="white-space:nowrap">' + fmt(r.created_at) + '</td>' +
         '</tr>';
     }).join('');
   }
 
-  var STATUS_OPTS = ['pendiente','revisado','contactado','rechazado'];
+  var STATUS_OPTS = ['pendiente', 'revisado', 'contactado', 'rechazado'];
+
+  function statusSelect(rowId, current) {
+    var val = current || 'pendiente';
+    var opts = STATUS_OPTS.map(function(s) {
+      return '<option value="' + s + '"' + (s === val ? ' selected' : '') + '>' + s + '</option>';
+    }).join('');
+    return '<select class="status-sel st-' + val + '" data-row-id="' + esc(rowId) + '">' + opts + '</select>';
+  }
 
   async function loadPostulaciones() {
-    var res = await sb.from('postulaciones').select('*').order('created_at',{ascending:false});
+    var res = await sb.from('postulaciones').select('*').order('created_at', { ascending: false });
     var rows = res.data || [];
-    _cache.postulaciones = rows;
-    document.getElementById('stat-postulaciones').textContent = rows.length;
-    document.getElementById('count-postulaciones').textContent = rows.length;
+    cache.postulaciones = rows;
+    setStats('postulaciones', rows.length);
     var tbody = document.getElementById('tbody-postulaciones');
     if (!rows.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Sin registros aún</td></tr>'; return; }
-    tbody.innerHTML = rows.map(function(r,i){
+    tbody.innerHTML = rows.map(function(r, i) {
       var skills = Array.isArray(r.habilidades) ? r.habilidades : [];
-      var chipsHtml = skills.length
-        ? '<div class="chip-list">' + skills.map(function(s){ return '<span class="chip-sm">' + esc(s) + '</span>'; }).join('') + '</div>'
+      var chips  = skills.length
+        ? '<div class="chip-list">' + skills.map(function(s) { return '<span class="chip-sm">' + esc(s) + '</span>'; }).join('') + '</div>'
         : '<span class="cell-dim">—</span>';
-      var portHtml = r.portfolio_url
-        ? '<a href="' + esc(r.portfolio_url) + '" target="_blank" class="discord-link">↗ ver</a>'
+      var port = r.portfolio_url
+        ? '<a class="link" href="' + esc(r.portfolio_url) + '" target="_blank">↗ ver</a>'
         : '<span class="cell-dim">archivo</span>';
-      var status = r.status || 'pendiente';
-      var statusOpts = STATUS_OPTS.map(function(s){
-        return '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>';
-      }).join('');
-      var pid2 = r.discord_provider_id || '';
-      return '<tr data-id="' + r.id + '">' +
+      return '<tr>' +
         '<td class="cell-dim mono">' + (i+1) + '</td>' +
         '<td class="mono">' + esc(r.roblox_username) + '</td>' +
         '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
-        '<td class="mono" style="font-size:.68rem;">' + esc(pid2) +
-          (pid2 ? '<button class="copy-btn" onclick="copyText('' + pid2 + '',this)" title="Copiar Discord ID">⧉</button>' : '<span class="cell-dim">—</span>') +
-        '</td>' +
-        '<td>' + chipsHtml + '</td>' +
-        '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.contribucion) + '</div></td>' +
-        '<td>' + portHtml + '</td>' +
-        '<td><select class="status-sel badge-' + status + '" onchange="updateStatus(\'' + r.id + '\',this)">' + statusOpts + '</select></td>' +
+        '<td class="mono">' + pidCell(r.discord_provider_id) + '</td>' +
+        '<td>' + chips + '</td>' +
+        '<td><div class="cell-clamp">' + esc(r.contribucion) + '</div></td>' +
+        '<td>' + port + '</td>' +
+        '<td>' + statusSelect(r.id, r.status) + '</td>' +
         '<td class="cell-dim mono" style="white-space:nowrap">' + fmt(r.created_at) + '</td>' +
         '</tr>';
     }).join('');
   }
 
   async function loadTesters() {
-    var res = await sb.from('testers').select('*').order('created_at',{ascending:false});
+    var res = await sb.from('testers').select('*').order('created_at', { ascending: false });
     var rows = res.data || [];
-    _cache.testers = rows;
-    document.getElementById('stat-testers').textContent = rows.length;
-    document.getElementById('count-testers').textContent = rows.length;
+    cache.testers = rows;
+    setStats('testers', rows.length);
     var tbody = document.getElementById('tbody-testers');
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Sin registros aún</td></tr>'; return; }
-    tbody.innerHTML = rows.map(function(r,i){
-      var pid = r.discord_provider_id || '';
-      var uid = r.discord_user_id || '';
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Sin registros aún</td></tr>'; return; }
+    tbody.innerHTML = rows.map(function(r, i) {
       return '<tr>' +
         '<td class="cell-dim mono">' + (i+1) + '</td>' +
         '<td class="mono">' + esc(r.roblox_username) + '</td>' +
         '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
-        '<td class="mono" style="font-size:.7rem;">' + (pid ? esc(pid) + '<button class="copy-btn" onclick="copyText(\'' + pid + '\',this)" title="Copiar Discord ID numérico">⧉</button>' : '<span class=\"cell-dim\">—</span>') + '</td>' +
-        '<td class="cell-dim mono" style="font-size:.58rem;opacity:.4;">' + esc(uid.slice(0,8)) + '…</td>' +
+        '<td class="mono">' + pidCell(r.discord_provider_id) + '</td>' +
         '<td class="cell-dim mono" style="white-space:nowrap">' + fmt(r.created_at) + '</td>' +
         '</tr>';
     }).join('');
   }
 
-  // ── STATUS UPDATE ─────────────────────────────────────────────────────────────
+  // ── SEARCH ────────────────────────────────────────────────────────────────────
 
-  async function updateStatus(id, sel) {
-    var newStatus = sel.value;
-    sel.className = 'status-sel badge-' + newStatus;
-    var res = await sb.from('postulaciones').update({ status: newStatus }).eq('id', id);
-    if (res.error) { console.warn('Status update failed:', res.error.message); }
-  }
-
-  // ── SEARCH / FILTER ───────────────────────────────────────────────────────────
-
-  function filterTable(tbodyId, query) {
-    var q = query.toLowerCase();
-    var tbody = document.getElementById(tbodyId);
-    if (!tbody) return;
-    tbody.querySelectorAll('tr').forEach(function(tr) {
+  function filterTable(tbodyId, q) {
+    q = q.toLowerCase();
+    document.getElementById(tbodyId).querySelectorAll('tr').forEach(function(tr) {
       if (tr.querySelector('.empty-state')) return;
-      var text = tr.textContent.toLowerCase();
-      tr.classList.toggle('hidden-row', q.length > 0 && !text.includes(q));
+      tr.classList.toggle('hidden-row', !!q && !tr.textContent.toLowerCase().includes(q));
     });
   }
 
-  // ── COPY ─────────────────────────────────────────────────────────────────────
-
-  function copyText(text, btn) {
-    navigator.clipboard.writeText(text).then(function() {
-      btn.textContent = '✓';
-      btn.classList.add('copied');
-      setTimeout(function(){ btn.textContent = '⧉'; btn.classList.remove('copied'); }, 1500);
-    });
-  }
-
-  // ── EXPORT CSV ───────────────────────────────────────────────────────────────
+  // ── EXPORT CSV ────────────────────────────────────────────────────────────────
 
   function exportCSV(table) {
-    var rows = _cache[table] || [];
-    if (!rows.length) { alert('No hay datos para exportar.'); return; }
+    var rows = cache[table] || [];
+    if (!rows.length) { alert('Sin datos para exportar.'); return; }
     var keys = Object.keys(rows[0]);
-    var csv = [keys.join(',')].concat(rows.map(function(r){
-      return keys.map(function(k){
-        var val = r[k];
-        if (Array.isArray(val)) val = val.join('; ');
-        if (val === null || val === undefined) return '';
-        return '"' + String(val).replace(/"/g,'""') + '"';
+    var csv  = [keys.join(',')].concat(rows.map(function(r) {
+      return keys.map(function(k) {
+        var v = r[k];
+        if (Array.isArray(v)) v = v.join('; ');
+        if (v === null || v === undefined) return '';
+        return '"' + String(v).replace(/"/g, '""') + '"';
       }).join(',');
     })).join('\n');
-    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    var url  = URL.createObjectURL(blob);
-    var a    = document.createElement('a');
-    a.href = url; a.download = 'wz_' + table + '_' + new Date().toISOString().split('T')[0] + '.csv';
-    a.click(); URL.revokeObjectURL(url);
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    a.download = 'wz_' + table + '_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
   }
 
-  // ── REALTIME ─────────────────────────────────────────────────────────────────
+  // ── REALTIME ──────────────────────────────────────────────────────────────────
 
-  function prependRow(table, html) {
+  function prependRow(table, cells) {
     var tbody = document.getElementById('tbody-' + table);
     if (!tbody) return;
-    var empty = tbody.querySelector('.empty-state');
-    if (empty) tbody.innerHTML = '';
+    if (tbody.querySelector('.empty-state')) tbody.innerHTML = '';
     var tr = document.createElement('tr');
-    tr.innerHTML = html;
-    tr.querySelectorAll('td').forEach(function(td){ td.style.background = 'rgba(255,0,255,.03)'; });
+    tr.innerHTML = cells;
+    tr.querySelectorAll('td').forEach(function(td) { td.style.background = 'rgba(255,0,255,.03)'; });
     tbody.insertBefore(tr, tbody.firstChild);
-    var badge = document.createElement('span');
-    badge.className = 'new-badge'; badge.textContent = 'NEW';
-    tr.querySelector('td').appendChild(badge);
-    ['stat-','count-'].forEach(function(prefix){
-      var el = document.getElementById(prefix + table);
-      if (el) el.textContent = (parseInt(el.textContent || 0) + 1);
-    });
+    var nb = document.createElement('span');
+    nb.className = 'new-badge'; nb.textContent = 'NEW';
+    tr.querySelector('td').appendChild(nb);
+    setStats(table, (parseInt(document.getElementById('stat-' + table).textContent) || 0) + 1);
   }
 
   function subscribeRealtime() {
     sb.channel('admin-rt')
-      .on('postgres_changes', {event:'INSERT',schema:'public',table:'feedback'}, function(p){
-        var r = p.new;
-        _cache.feedback.unshift(r);
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'feedback' }, function(p) {
+        var r = p.new; cache.feedback.unshift(r);
         prependRow('feedback',
           '<td class="cell-dim mono">—</td>' +
-          '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.texto) + '</div></td>' +
+          '<td><div class="cell-clamp">' + esc(r.texto) + '</div></td>' +
           '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
+          '<td class="mono">' + pidCell(r.discord_provider_id) + '</td>' +
           '<td class="cell-dim mono">' + fmt(r.created_at) + '</td>');
       })
-      .on('postgres_changes', {event:'INSERT',schema:'public',table:'sugerencias'}, function(p){
-        var r = p.new;
-        _cache.sugerencias.unshift(r);
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sugerencias' }, function(p) {
+        var r = p.new; cache.sugerencias.unshift(r);
         prependRow('sugerencias',
           '<td class="cell-dim mono">—</td>' +
-          '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q1) + '</div></td>' +
-          '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q2) + '</div></td>' +
-          '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q3) + '</div></td>' +
-          '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q4) + '</div></td>' +
+          '<td><div class="cell-clamp">' + esc(r.q1) + '</div></td>' +
+          '<td><div class="cell-clamp">' + esc(r.q2) + '</div></td>' +
+          '<td><div class="cell-clamp">' + esc(r.q3) + '</div></td>' +
+          '<td><div class="cell-clamp">' + esc(r.q4) + '</div></td>' +
           '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
           '<td class="cell-dim mono">' + fmt(r.created_at) + '</td>');
       })
-      .on('postgres_changes', {event:'INSERT',schema:'public',table:'postulaciones'}, function(p){
-        var r = p.new;
-        _cache.postulaciones.unshift(r);
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'postulaciones' }, function(p) {
+        var r = p.new; cache.postulaciones.unshift(r);
         var skills = Array.isArray(r.habilidades) ? r.habilidades : [];
-        var chipsHtml = skills.length ? '<div class="chip-list">' + skills.map(function(s){ return '<span class="chip-sm">'+esc(s)+'</span>'; }).join('') + '</div>' : '<span class="cell-dim">—</span>';
-        var statusOpts = STATUS_OPTS.map(function(s){ return '<option value="'+s+'"'+(s==='pendiente'?' selected':'')+'>' + s + '</option>'; }).join('');
-        var pid_prt = r.discord_provider_id || '';
+        var chips  = skills.length ? '<div class="chip-list">' + skills.map(function(s) { return '<span class="chip-sm">' + esc(s) + '</span>'; }).join('') + '</div>' : '<span class="cell-dim">—</span>';
+        var port = r.portfolio_url ? '<a class="link" href="' + esc(r.portfolio_url) + '" target="_blank">↗ ver</a>' : '<span class="cell-dim">archivo</span>';
         prependRow('postulaciones',
           '<td class="cell-dim mono">—</td>' +
           '<td class="mono">' + esc(r.roblox_username) + '</td>' +
           '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
-          '<td class="mono" style="font-size:.68rem;">' + esc(pid_prt) + (pid_prt ? '<button class="copy-btn" onclick="copyText(''+pid_prt+'',this)">⧉</button>' : '<span class="cell-dim">—</span>') + '</td>' +
-          '<td>' + chipsHtml + '</td>' +
-          '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.contribucion) + '</div></td>' +
-          '<td>' + (r.portfolio_url ? '<a href="'+esc(r.portfolio_url)+'" target="_blank" class="discord-link">↗ ver</a>' : '<span class="cell-dim">archivo</span>') + '</td>' +
-          '<td><select class="status-sel badge-pendiente" onchange="updateStatus(\''+r.id+'\',this)">' + statusOpts + '</select></td>' +
+          '<td class="mono">' + pidCell(r.discord_provider_id) + '</td>' +
+          '<td>' + chips + '</td>' +
+          '<td><div class="cell-clamp">' + esc(r.contribucion) + '</div></td>' +
+          '<td>' + port + '</td>' +
+          '<td>' + statusSelect(r.id, 'pendiente') + '</td>' +
           '<td class="cell-dim mono">' + fmt(r.created_at) + '</td>');
       })
-      .on('postgres_changes', {event:'INSERT',schema:'public',table:'testers'}, function(p){
-        var r = p.new;
-        _cache.testers.unshift(r);
-        var pid_rt = r.discord_provider_id || '';
-        var uid_rt = r.discord_user_id || '';
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'testers' }, function(p) {
+        var r = p.new; cache.testers.unshift(r);
         prependRow('testers',
           '<td class="cell-dim mono">—</td>' +
           '<td class="mono">' + esc(r.roblox_username) + '</td>' +
           '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
-          '<td class="mono" style="font-size:.7rem;">' + (pid_rt ? esc(pid_rt) + '<button class="copy-btn" onclick="copyText(\''+pid_rt+'\',this)">⧉</button>' : '<span class=\"cell-dim\">—</span>') + '</td>' +
-          '<td class="cell-dim mono" style="font-size:.58rem;opacity:.4;">' + esc(uid_rt.slice(0,8)) + '…</td>' +
+          '<td class="mono">' + pidCell(r.discord_provider_id) + '</td>' +
           '<td class="cell-dim mono">' + fmt(r.created_at) + '</td>');
       })
       .subscribe();
