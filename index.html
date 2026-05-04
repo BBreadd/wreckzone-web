@@ -817,11 +817,15 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   async function sbInsert(table, payload) {
     if (!sb) return { error: { message: 'Supabase no configurado' } };
     var res = await sb.from(table).insert(payload);
-    if (res.error && res.error.message && res.error.message.indexOf('discord_provider_id') !== -1) {
-      // Column not created yet — retry without it
-      var fallback = Object.assign({}, payload);
-      delete fallback.discord_provider_id;
-      res = await sb.from(table).insert(fallback);
+    if (res.error && res.error.message) {
+      var msg = res.error.message;
+      // Unknown column — strip it and retry (handles missing ALTER TABLE)
+      var colMatch = msg.match(/column \"([^\"]+)\" of relation/);
+      if (colMatch) {
+        var fallback = Object.assign({}, payload);
+        delete fallback[colMatch[1]];
+        res = await sb.from(table).insert(fallback);
+      }
     }
     return res;
   }
