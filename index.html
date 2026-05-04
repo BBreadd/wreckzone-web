@@ -221,6 +221,17 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 .dev-label{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.3em;color:var(--m);margin-bottom:.6rem;}
 
 .horizon-glow{position:fixed;bottom:38vh;left:50%;transform:translateX(-50%);width:70vw;height:2px;background:linear-gradient(to right,transparent,var(--m),var(--c),var(--m),transparent);box-shadow:0 0 40px 8px var(--m),0 0 80px 20px rgba(255,0,255,.3);z-index:1;pointer-events:none;animation:horizonPulse 4s ease-in-out infinite;}
+
+#wz-toast{position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(4,0,14,.97);border:1px solid rgba(114,137,218,.45);border-radius:8px;padding:.7rem 1.5rem;font-family:'Share Tech Mono',monospace;font-size:.74rem;letter-spacing:.12em;color:rgba(255,255,255,.82);z-index:600;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.6);}
+#wz-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.hub-login-bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:rgba(88,101,242,.08);border:1px solid rgba(88,101,242,.28);border-radius:10px;padding:.85rem 1.3rem;margin-bottom:1.8rem;flex-wrap:wrap;}
+.hub-login-bar span{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.1em;color:rgba(255,255,255,.4);}
+.hub-login-bar button{display:flex;align-items:center;gap:.5rem;background:rgba(88,101,242,.2);border:1px solid rgba(88,101,242,.45);border-radius:6px;padding:.45rem 1rem;font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.15em;color:#7289da;cursor:pointer;transition:background .2s,box-shadow .2s;white-space:nowrap;}
+.hub-login-bar button:hover{background:rgba(88,101,242,.38);box-shadow:0 0 14px rgba(88,101,242,.3);}
+.neon-input.autofill{background:rgba(88,101,242,.08);border-color:rgba(88,101,242,.3);color:rgba(255,255,255,.5);cursor:default;}
+.neon-input.autofill:focus{border-color:rgba(88,101,242,.45);box-shadow:none;}
+.tester-user-info{display:none;align-items:center;gap:.7rem;background:rgba(88,101,242,.12);border:1px solid rgba(88,101,242,.3);border-radius:8px;padding:.65rem 1.1rem;font-family:'Share Tech Mono',monospace;font-size:.76rem;letter-spacing:.1em;color:#7289da;margin-bottom:1.5rem;}
+.tester-user-info img{width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(88,101,242,.5);}
 </style>
 </head>
 <body>
@@ -364,6 +375,13 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
       <p class="section-label">// ELIGE TU DESTINO //</p>
       <h2 class="section-title">Centro de <em>WreckZone</em></h2>
       <div class="divider" style="margin:0 auto;"></div>
+    </div>
+    <div id="hub-login-banner" class="ri hub-login-bar" style="transition-delay:.05s;display:none;">
+      <span>Conéctate con Discord para registrarte como tester o postularte al equipo</span>
+      <button onclick="loginDiscord()">
+        <svg width="16" height="12" viewBox="0 0 22 16" fill="none"><path d="M18.59 1.37A18.1 18.1 0 0014.2.04a.07.07 0 00-.07.03c-.18.33-.39.76-.53 1.1a16.7 16.7 0 00-5.19 0A11.3 11.3 0 007.87.07a.07.07 0 00-.07-.03A18.1 18.1 0 003.41 1.37a.06.06 0 00-.03.03C.5 5.75-.3 10 .09 14.2a.07.07 0 00.03.05 18.2 18.2 0 005.49 2.8.07.07 0 00.08-.03c.42-.58.8-1.2 1.12-1.85a.07.07 0 00-.04-.1 12 12 0 01-1.72-.83.07.07 0 010-.12l.34-.27a.07.07 0 01.07-.01c3.61 1.66 7.52 1.66 11.09 0a.07.07 0 01.07.01l.34.27a.07.07 0 010 .12 11.3 11.3 0 01-1.72.82.07.07 0 00-.04.1c.33.65.71 1.27 1.12 1.86a.07.07 0 00.08.03 18.2 18.2 0 005.5-2.8.07.07 0 00.02-.05c.46-4.87-.77-9.09-3.28-12.83a.06.06 0 00-.03-.03z" fill="#7289da"/></svg>
+        Conectar Discord
+      </button>
     </div>
     <div class="hub-grid">
       <button class="hub-card ri" style="--card-color:#00FFFF;transition-delay:.08s;text-align:left;" onclick="navigate('page-feedback')">
@@ -545,8 +563,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
             <input id="post-roblox" class="neon-input" type="text" placeholder="TuUsername123" autocomplete="off">
           </div>
           <div class="input-group">
-            <label class="input-label">Usuario de Discord</label>
-            <input id="post-discord" class="neon-input" type="text" placeholder="usuario#0000 o @usuario" autocomplete="off">
+            <label class="input-label">Discord <span style="color:rgba(88,101,242,.8);font-size:.6rem;letter-spacing:.15em;">AUTO</span></label>
+            <input id="post-discord" class="neon-input autofill" type="text" placeholder="— se obtiene de tu sesión —" readonly>
           </div>
         </div>
         <div class="input-group">
@@ -622,17 +640,17 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     </div>
     <div id="tester-form">
       <div class="glass-card ri" style="transition-delay:.18s;">
-        <div class="discord-badge ri" style="transition-delay:.22s;">
+        <div id="tester-user-info" class="tester-user-info">
+          <svg width="16" height="12" viewBox="0 0 22 16" fill="none"><path d="M18.59 1.37A18.1 18.1 0 0014.2.04a.07.07 0 00-.07.03c-.18.33-.39.76-.53 1.1a16.7 16.7 0 00-5.19 0A11.3 11.3 0 007.87.07a.07.07 0 00-.07-.03A18.1 18.1 0 003.41 1.37a.06.06 0 00-.03.03C.5 5.75-.3 10 .09 14.2a.07.07 0 00.03.05 18.2 18.2 0 005.49 2.8.07.07 0 00.08-.03c.42-.58.8-1.2 1.12-1.85a.07.07 0 00-.04-.1 12 12 0 01-1.72-.83.07.07 0 010-.12l.34-.27a.07.07 0 01.07-.01c3.61 1.66 7.52 1.66 11.09 0a.07.07 0 01.07.01l.34.27a.07.07 0 010 .12 11.3 11.3 0 01-1.72.82.07.07 0 00-.04.1c.33.65.71 1.27 1.12 1.86a.07.07 0 00.08.03 18.2 18.2 0 005.5-2.8.07.07 0 00.02-.05c.46-4.87-.77-9.09-3.28-12.83a.06.06 0 00-.03-.03z" fill="#7289da"/></svg>
+          <span id="tester-user-name">—</span>
+        </div>
+        <div class="discord-badge ri" id="tester-discord-prompt" style="transition-delay:.22s;">
           <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M18.59 1.37A18.1 18.1 0 0014.2.04a.07.07 0 00-.07.03c-.18.33-.39.76-.53 1.1a16.7 16.7 0 00-5.19 0A11.3 11.3 0 007.87.07a.07.07 0 00-.07-.03A18.1 18.1 0 003.41 1.37a.06.06 0 00-.03.03C.5 5.75-.3 10 .09 14.2a.07.07 0 00.03.05 18.2 18.2 0 005.49 2.8.07.07 0 00.08-.03c.42-.58.8-1.2 1.12-1.85a.07.07 0 00-.04-.1 12 12 0 01-1.72-.83.07.07 0 010-.12l.34-.27a.07.07 0 01.07-.01c3.61 1.66 7.52 1.66 11.09 0a.07.07 0 01.07.01l.34.27a.07.07 0 010 .12 11.3 11.3 0 01-1.72.82.07.07 0 00-.04.1c.33.65.71 1.27 1.12 1.86a.07.07 0 00.08.03 18.2 18.2 0 005.5-2.8.07.07 0 00.02-.05c.46-4.87-.77-9.09-3.28-12.83a.06.06 0 00-.03-.03z" fill="#7289da"/></svg>
           Se requerirá cuenta de Discord para registrar tu plaza
         </div>
-        <div class="input-group">
+        <div class="input-group" style="margin-bottom:0;">
           <label class="input-label">Usuario de Roblox <span class="req">*</span></label>
           <input id="tester-roblox" class="neon-input" type="text" placeholder="TuUsername123" autocomplete="off">
-        </div>
-        <div class="input-group" style="margin-bottom:0;">
-          <label class="input-label">Usuario de Discord</label>
-          <input id="tester-discord" class="neon-input" type="text" placeholder="usuario o @usuario (para confirmarte el rol)">
         </div>
       </div>
       <div style="margin-top:1.8rem;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;" class="ri">
@@ -649,6 +667,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   </div>
 </div>
 
+<div id="wz-toast"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
   var SUPABASE_URL = 'https://ifzxejhttrnkgdawyigx.supabase.co';
@@ -657,6 +677,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
 
   var currentUser = null;
+
+  // ── AUTH ────────────────────────────────────────────────────────────────────
 
   async function initAuth() {
     if (!sb) return;
@@ -673,27 +695,66 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   }
 
   function renderUserBadge(user) {
-    var badge = document.getElementById('user-badge');
-    var loginBtn = document.getElementById('discord-login-btn');
-    var heroHint = document.getElementById('hero-user-hint');
-    var heroName = document.getElementById('hero-user-name');
+    var badge      = document.getElementById('user-badge');
+    var loginBtn   = document.getElementById('discord-login-btn');
+    var heroHint   = document.getElementById('hero-user-hint');
+    var heroName   = document.getElementById('hero-user-name');
+    var hubBanner  = document.getElementById('hub-login-banner');
+    var testerInfo = document.getElementById('tester-user-info');
+    var testerPrompt = document.getElementById('tester-discord-prompt');
     if (!badge || !loginBtn) return;
+
     if (user) {
-      var meta = user.user_metadata || {};
+      var meta   = user.user_metadata || {};
       var avatar = meta.avatar_url || '';
-      var name = meta.full_name || meta.name || meta.user_name || meta.preferred_username || 'Usuario';
+      var name   = meta.full_name || meta.name || meta.user_name || meta.preferred_username || 'Usuario';
+      var globalName = (meta.custom_claims && meta.custom_claims.global_name) || name;
+
+      // Nav badge
       badge.innerHTML =
         (avatar ? '<img src="' + avatar + '" style="width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(157,77,255,.5);" />' : '') +
-        '<span style="font-size:.68rem;letter-spacing:.12em;color:rgba(255,255,255,.7);">' + name + '</span>' +
+        '<span style="font-size:.68rem;letter-spacing:.12em;color:rgba(255,255,255,.7);">' + globalName + '</span>' +
         '<button onclick="logoutUser()" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.68rem;cursor:pointer;font-family:\'Share Tech Mono\',monospace;letter-spacing:.1em;padding:0 0 0 .3rem;">salir</button>';
       badge.style.display = 'flex';
       loginBtn.style.display = 'none';
+
+      // Hero hint
       if (heroHint) { heroHint.style.display = 'block'; heroHint.classList.add('vis'); }
-      if (heroName) heroName.textContent = name;
+      if (heroName) heroName.textContent = globalName;
+
+      // Hub: hide login banner
+      if (hubBanner) hubBanner.style.display = 'none';
+
+      // Tester: show logged-in info, hide prompt
+      if (testerInfo) {
+        var avatarHtml = avatar ? '<img src="' + avatar + '" />' : '';
+        document.getElementById('tester-user-name').textContent = 'Conectado como ' + globalName;
+        testerInfo.style.display = 'flex';
+      }
+      if (testerPrompt) testerPrompt.style.display = 'none';
+
+      // Auto-fill Discord field in postulaciones
+      var postDiscord = document.getElementById('post-discord');
+      if (postDiscord) {
+        postDiscord.value = globalName;
+        postDiscord.placeholder = globalName;
+      }
+
     } else {
       badge.style.display = 'none';
       loginBtn.style.display = 'flex';
-      if (heroHint) { heroHint.style.display = 'none'; }
+      if (heroHint) heroHint.style.display = 'none';
+
+      // Hub: show login banner
+      if (hubBanner) hubBanner.style.display = 'flex';
+
+      // Tester: hide info, show prompt
+      if (testerInfo) testerInfo.style.display = 'none';
+      if (testerPrompt) testerPrompt.style.display = 'flex';
+
+      // Reset discord field
+      var postDiscord = document.getElementById('post-discord');
+      if (postDiscord) { postDiscord.value = ''; postDiscord.placeholder = '— se obtiene de tu sesión —'; }
     }
   }
 
@@ -701,7 +762,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     if (!sb) { alert('Supabase no configurado aún.'); return; }
     await sb.auth.signInWithOAuth({
       provider: 'discord',
-      options: { redirectTo: window.location.href }
+      options: { redirectTo: window.location.origin }
     });
   }
 
@@ -710,12 +771,60 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     await sb.auth.signOut();
   }
 
+  // ── SUPABASE HELPERS ────────────────────────────────────────────────────────
+
   async function sbInsert(table, payload) {
     if (!sb) return { error: { message: 'Supabase no configurado' } };
     return await sb.from(table).insert(payload);
   }
 
+  // Returns true if the current user already has a row in the given table
+  async function userAlreadySubmitted(table) {
+    if (!sb || !currentUser) return false;
+    try {
+      var res = await sb.from(table).select('id').eq('discord_user_id', currentUser.id).maybeSingle();
+      return !!(res && res.data);
+    } catch(e) { return false; }
+  }
+
+  // Returns true if the current user already submitted today in the given table
+  async function userSubmittedToday(table) {
+    if (!sb || !currentUser) return false;
+    try {
+      var today = new Date().toISOString().split('T')[0];
+      var res = await sb.from(table).select('id')
+        .eq('discord_user_id', currentUser.id)
+        .gte('created_at', today + 'T00:00:00.000Z')
+        .lt('created_at', today + 'T23:59:59.999Z')
+        .maybeSingle();
+      return !!(res && res.data);
+    } catch(e) { return false; }
+  }
+
+  // ── UI HELPERS ──────────────────────────────────────────────────────────────
+
+  function showToast(msg) {
+    var t = document.getElementById('wz-toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function() { t.classList.remove('show'); }, 3500);
+  }
+
+  function requireLogin(msg) {
+    showToast(msg || 'Conéctate con Discord para continuar');
+    var btn = document.getElementById('discord-login-btn');
+    if (btn) {
+      btn.style.transition = 'box-shadow .15s';
+      btn.style.boxShadow = '0 0 0 2px #7289da, 0 0 20px rgba(114,137,218,.5)';
+      setTimeout(function() { btn.style.boxShadow = ''; }, 1400);
+    }
+  }
+
   initAuth();
+
+  // ── NAVIGATION ──────────────────────────────────────────────────────────────
 
   var history_stack = ['page-hero'];
   var nav_titles = {
@@ -830,6 +939,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   }
   staggerReveal(document.getElementById('page-hero'));
 
+  // ── FEEDBACK (anónimo permitido, ilimitado) ─────────────────────────────────
+
   var fbText = document.getElementById('fb-text');
   var fbCount = document.getElementById('fb-count');
   fbText.addEventListener('input', function() {
@@ -844,26 +955,29 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     var txt = document.getElementById('fb-text').value.trim();
     if (!txt) { flashBorder('fb-text'); return; }
     var meta = currentUser ? (currentUser.user_metadata || {}) : {};
+    var globalName = currentUser ? ((meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || null) : null;
     var res = await sbInsert('feedback', {
       texto: txt,
       discord_user_id: currentUser ? currentUser.id : null,
-      discord_username: currentUser ? (meta.full_name || meta.user_name || null) : null
+      discord_username: globalName
     });
-    if (res && res.error) { console.warn('Supabase:', res.error.message); }
+    if (res && res.error) { console.warn('Supabase feedback:', res.error.message); }
     document.getElementById('fb-form').style.display = 'none';
     document.getElementById('fb-success').classList.add('show');
   }
+
+  // ── SUGERENCIAS (1 por día por usuario; localStorage para anónimos) ──────────
 
   var qState = { q1: null, q2: null, q3: null, q4: null };
 
   function toggleQ(id, val) {
     qState[id] = val;
     var block = document.getElementById(id);
-    var area = document.getElementById(id + '-area');
-    var btns = block.querySelectorAll('.yn-btn');
+    var area  = document.getElementById(id + '-area');
+    var btns  = block.querySelectorAll('.yn-btn');
     btns[0].classList.toggle('selected-yes', val === 'yes');
-    btns[0].classList.toggle('selected-no', val !== 'yes');
-    btns[1].classList.toggle('selected-no', val === 'no');
+    btns[0].classList.toggle('selected-no',  val !== 'yes');
+    btns[1].classList.toggle('selected-no',  val === 'no');
     btns[1].classList.toggle('selected-yes', false);
     area.classList.toggle('open', val === 'yes');
     updateProgress();
@@ -877,20 +991,46 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   async function submitSugerencias() {
     var hasAny = Object.values(qState).some(function(v) { return v !== null; });
     if (!hasAny) { flashSection('sug-form'); return; }
+
+    // Limit: 1 per day
+    if (currentUser) {
+      var alreadyToday = await userSubmittedToday('sugerencias');
+      if (alreadyToday) {
+        showToast('Ya enviaste sugerencias hoy. Vuelve mañana 🕐');
+        return;
+      }
+    } else {
+      var lastSug = localStorage.getItem('wz_sug_last');
+      if (lastSug) {
+        var lastDate = new Date(parseInt(lastSug)).toDateString();
+        if (lastDate === new Date().toDateString()) {
+          showToast('Ya enviaste sugerencias hoy. Vuelve mañana 🕐');
+          return;
+        }
+      }
+    }
+
     var meta = currentUser ? (currentUser.user_metadata || {}) : {};
+    var globalName = currentUser ? ((meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || null) : null;
     var payload = {
       discord_user_id: currentUser ? currentUser.id : null,
-      discord_username: currentUser ? (meta.full_name || meta.user_name || null) : null
+      discord_username: globalName
     };
     ['q1','q2','q3','q4'].forEach(function(q) {
       var ta = document.querySelector('#' + q + '-area textarea');
       payload[q] = (ta && ta.value.trim()) ? ta.value.trim() : null;
     });
+
     var res = await sbInsert('sugerencias', payload);
-    if (res && res.error) { console.warn('Supabase:', res.error.message); }
+    if (res && res.error) { console.warn('Supabase sugerencias:', res.error.message); return; }
+
+    if (!currentUser) localStorage.setItem('wz_sug_last', Date.now().toString());
+
     document.getElementById('sug-form').style.display = 'none';
     document.getElementById('sug-success').classList.add('show');
   }
+
+  // ── UTILS (shared) ───────────────────────────────────────────────────────────
 
   function flashBorder(id) {
     var el = document.getElementById(id);
@@ -912,7 +1052,9 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 
   function toggleChip(el) { el.classList.toggle('sel'); }
 
-  var postContrib = document.getElementById('post-contrib');
+  // ── POSTULACIONES (requiere login · 1 por usuario) ──────────────────────────
+
+  var postContrib      = document.getElementById('post-contrib');
   var postContribCount = document.getElementById('post-contrib-count');
   postContrib.addEventListener('input', function() {
     var len = postContrib.value.length;
@@ -926,19 +1068,39 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     document.getElementById('tab-upload').classList.toggle('active', tab === 'upload');
     document.getElementById('tab-url').classList.toggle('active', tab === 'url');
     document.getElementById('port-upload-section').style.display = tab === 'upload' ? '' : 'none';
-    document.getElementById('port-url-section').style.display = tab === 'url' ? '' : 'none';
+    document.getElementById('port-url-section').style.display    = tab === 'url'    ? '' : 'none';
   }
+
+  // Allowed file types for portfolio upload
+  var ALLOWED_TYPES = [
+    'image/jpeg','image/png','image/gif','image/webp','image/avif',
+    'video/mp4','video/webm','video/quicktime',
+    'application/pdf',
+    'application/zip','application/x-zip-compressed',
+    'application/octet-stream' // .rbxm / .rbxl / .rbxlx
+  ];
+  var ALLOWED_EXT = /\.(jpe?g|png|gif|webp|avif|mp4|webm|mov|pdf|zip|rbxm|rbxl|rbxlx)$/i;
 
   function handleFile(input) {
     var file = input.files[0];
     if (!file) return;
-    var err = document.getElementById('post-file-error');
-    if (file.size > 10 * 1024 * 1024) {
+    var err  = document.getElementById('post-file-error');
+
+    if (!ALLOWED_EXT.test(file.name)) {
+      err.textContent = 'Tipo de archivo no permitido. Usa imagen, video, PDF, ZIP o archivos de Roblox (.rbxm, .rbxl).';
       err.style.display = 'block';
       input.value = '';
       document.getElementById('post-file-preview').classList.remove('show');
       return;
     }
+    if (file.size > 10 * 1024 * 1024) {
+      err.textContent = 'El archivo supera los 10 MB. Elige uno más pequeño o usa un enlace.';
+      err.style.display = 'block';
+      input.value = '';
+      document.getElementById('post-file-preview').classList.remove('show');
+      return;
+    }
+
     err.style.display = 'none';
     document.getElementById('post-file-name').textContent = file.name;
     document.getElementById('post-file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
@@ -952,8 +1114,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 
   var dz = document.getElementById('post-dropzone');
   if (dz) {
-    dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragover'); });
-    dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
+    dz.addEventListener('dragover',  function(e) { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', function()  { dz.classList.remove('dragover'); });
     dz.addEventListener('drop', function(e) {
       e.preventDefault(); dz.classList.remove('dragover');
       var fi = document.getElementById('post-file');
@@ -963,58 +1125,78 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   }
 
   async function submitPost() {
-  if (!currentUser) {
-    var loginMsg = document.getElementById('post-login-msg');
-    if (loginMsg) { loginMsg.style.display = 'block'; }
-    await loginDiscord();
-    return;
+    if (!currentUser) {
+      requireLogin('Conecta Discord primero para postularte');
+      return;
+    }
+
+    // 1 submission per user
+    var alreadyApplied = await userAlreadySubmitted('postulaciones');
+    if (alreadyApplied) {
+      showToast('Ya enviaste una postulación. Te contactamos por Discord si hay fit.');
+      return;
+    }
+
+    var roblox   = document.getElementById('post-roblox').value.trim();
+    var contrib  = document.getElementById('post-contrib').value.trim();
+    var isUpload = document.getElementById('tab-upload').classList.contains('active');
+    var hasFile  = document.getElementById('post-file').files.length > 0;
+    var portUrl  = document.getElementById('post-url') ? document.getElementById('post-url').value.trim() : '';
+    var hasPort  = isUpload ? hasFile : portUrl.length > 0;
+
+    if (!roblox)   { flashBorder('post-roblox');  return; }
+    if (!contrib)  { flashBorder('post-contrib'); return; }
+    if (!hasPort)  { flashBorder(isUpload ? 'post-dropzone' : 'post-url'); return; }
+
+    var skills = Array.from(document.querySelectorAll('#skills-grid .chip.sel')).map(function(c){ return c.textContent.trim(); });
+    var meta   = currentUser.user_metadata || {};
+    var discordName = (meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || meta.preferred_username || null;
+
+    var res = await sbInsert('postulaciones', {
+      roblox_username:  roblox,
+      discord_username: discordName,
+      discord_user_id:  currentUser.id,
+      habilidades:      skills,
+      contribucion:     contrib,
+      portfolio_url:    isUpload ? null : (portUrl || null)
+    });
+    if (res && res.error) { console.warn('Supabase post:', res.error.message); return; }
+
+    document.getElementById('post-form').style.display = 'none';
+    document.getElementById('post-success').classList.add('show');
   }
-  var roblox = document.getElementById('post-roblox').value.trim();
-  var contrib = document.getElementById('post-contrib').value.trim();
-  var isUpload = document.getElementById('tab-upload').classList.contains('active');
-  var hasFile = document.getElementById('post-file').files.length > 0;
-  var portUrl = document.getElementById('post-url') ? document.getElementById('post-url').value.trim() : '';
-  var hasPort = isUpload ? hasFile : portUrl.length > 0;
-  if (!roblox) { flashBorder('post-roblox'); return; }
-  if (!contrib) { flashBorder('post-contrib'); return; }
-  if (!hasPort) { flashBorder(isUpload ? 'post-dropzone' : 'post-url'); return; }
-  var skills = Array.from(document.querySelectorAll('#skills-grid .chip.sel')).map(function(c){return c.textContent.trim();});
-  var meta = currentUser.user_metadata || {};
-  var res = await sbInsert('postulaciones', {
-    roblox_username: roblox,
-    discord_username: document.getElementById('post-discord').value.trim() || (meta.full_name || meta.user_name || null),
-    habilidades: skills,
-    contribucion: contrib,
-    portfolio_url: isUpload ? null : (portUrl || null),
-    discord_user_id: currentUser.id
-  });
-  if (res && res.error) { console.warn('Supabase:', res.error.message); }
-  document.getElementById('post-form').style.display = 'none';
-  document.getElementById('post-success').classList.add('show');
-}
+
+  // ── TESTER (requiere login · 1 por usuario) ──────────────────────────────────
 
   async function submitTester() {
-  if (!currentUser) {
-    // Mostrar mensaje y forzar login
-    var hint = document.getElementById('tester-discord');
-    if (hint) { flashBorder('tester-discord'); }
-    var loginMsg = document.getElementById('tester-login-msg');
-    if (loginMsg) { loginMsg.style.display = 'block'; }
-    await loginDiscord();
-    return;
+    if (!currentUser) {
+      requireLogin('Conecta Discord primero para registrarte');
+      return;
+    }
+
+    // 1 registration per user
+    var alreadyRegistered = await userAlreadySubmitted('testers');
+    if (alreadyRegistered) {
+      showToast('¡Ya estás registrado como tester! Te avisamos cuando abramos el acceso.');
+      return;
+    }
+
+    var roblox = document.getElementById('tester-roblox').value.trim();
+    if (!roblox) { flashBorder('tester-roblox'); return; }
+
+    var meta        = currentUser.user_metadata || {};
+    var discordName = (meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || meta.preferred_username || null;
+
+    var res = await sbInsert('testers', {
+      roblox_username:  roblox,
+      discord_username: discordName,
+      discord_user_id:  currentUser.id
+    });
+    if (res && res.error) { console.warn('Supabase tester:', res.error.message); return; }
+
+    document.getElementById('tester-form').style.display = 'none';
+    document.getElementById('tester-success').classList.add('show');
   }
-  var roblox = document.getElementById('tester-roblox').value.trim();
-  if (!roblox) { flashBorder('tester-roblox'); return; }
-  var meta = currentUser.user_metadata || {};
-  var res = await sbInsert('testers', {
-    roblox_username: roblox,
-    discord_username: document.getElementById('tester-discord').value.trim() || (meta.full_name || meta.user_name || null),
-    discord_user_id: currentUser.id
-  });
-  if (res && res.error) { console.warn('Supabase:', res.error.message); }
-  document.getElementById('tester-form').style.display = 'none';
-  document.getElementById('tester-success').classList.add('show');
-}
 </script>
 </body>
 </html>
