@@ -223,7 +223,7 @@ tr.hidden-row{display:none;}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>#</th><th>Roblox</th><th>Discord</th><th>Habilidades</th><th>Contribución</th><th>Portfolio</th><th>Estado</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>#</th><th>Roblox</th><th>Discord</th><th>Discord ID</th><th>Habilidades</th><th>Contribución</th><th>Portfolio</th><th>Estado</th><th>Fecha</th></tr></thead>
           <tbody id="tbody-postulaciones"><tr><td colspan="8" class="empty-state">Cargando...</td></tr></tbody>
         </table>
       </div>
@@ -242,7 +242,7 @@ tr.hidden-row{display:none;}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>#</th><th>Roblox</th><th>Discord</th><th>Discord User ID</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>#</th><th>Roblox</th><th>Discord</th><th>Discord ID numérico</th><th>User ID Supabase</th><th>Fecha</th></tr></thead>
           <tbody id="tbody-testers"><tr><td colspan="5" class="empty-state">Cargando...</td></tr></tbody>
         </table>
       </div>
@@ -276,11 +276,16 @@ tr.hidden-row{display:none;}
   }
 
   async function init() {
-    var res = await sb.auth.getSession();
-    if (res.data.session) handleSession(res.data.session);
+    // Use onAuthStateChange as single source of truth.
+    // INITIAL_SESSION fires on page load (handles localStorage session + OAuth redirect exchange).
+    // No separate getSession() needed — eliminates the race condition that caused slow/double auth.
     sb.auth.onAuthStateChange(function(event, session) {
-      if (session) handleSession(session);
-      else showGate();
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        if (session) { handleSession(session); return; }
+      }
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {
+        showGate();
+      }
     });
   }
 
@@ -360,7 +365,9 @@ tr.hidden-row{display:none;}
       return '<tr>' +
         '<td class="cell-dim mono">' + (i+1) + '</td>' +
         '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.texto) + '</div></td>' +
-        '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
+        '<td class="cell-dim mono">' + esc(r.discord_username) +
+          (r.discord_provider_id ? '<br><span style="font-size:.58rem;opacity:.45;">' + esc(r.discord_provider_id) + '<button class=\"copy-btn\" onclick=\"copyText('' + r.discord_provider_id + '\',this)\">⧉</button></span>' : '') +
+        '</td>' +
         '<td class="cell-dim mono" style="white-space:nowrap">' + fmt(r.created_at) + '</td>' +
         '</tr>';
     }).join('');
@@ -381,7 +388,9 @@ tr.hidden-row{display:none;}
         '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q2) + '</div></td>' +
         '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q3) + '</div></td>' +
         '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.q4) + '</div></td>' +
-        '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
+        '<td class="cell-dim mono">' + esc(r.discord_username) +
+          (r.discord_provider_id ? '<br><span style="font-size:.58rem;opacity:.45;">' + esc(r.discord_provider_id) + '<button class=\"copy-btn\" onclick=\"copyText('' + r.discord_provider_id + '\',this)\">⧉</button></span>' : '') +
+        '</td>' +
         '<td class="cell-dim mono" style="white-space:nowrap">' + fmt(r.created_at) + '</td>' +
         '</tr>';
     }).join('');
@@ -396,7 +405,7 @@ tr.hidden-row{display:none;}
     document.getElementById('stat-postulaciones').textContent = rows.length;
     document.getElementById('count-postulaciones').textContent = rows.length;
     var tbody = document.getElementById('tbody-postulaciones');
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Sin registros aún</td></tr>'; return; }
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Sin registros aún</td></tr>'; return; }
     tbody.innerHTML = rows.map(function(r,i){
       var skills = Array.isArray(r.habilidades) ? r.habilidades : [];
       var chipsHtml = skills.length
@@ -409,10 +418,14 @@ tr.hidden-row{display:none;}
       var statusOpts = STATUS_OPTS.map(function(s){
         return '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>';
       }).join('');
+      var pid2 = r.discord_provider_id || '';
       return '<tr data-id="' + r.id + '">' +
         '<td class="cell-dim mono">' + (i+1) + '</td>' +
         '<td class="mono">' + esc(r.roblox_username) + '</td>' +
         '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
+        '<td class="mono" style="font-size:.68rem;">' + esc(pid2) +
+          (pid2 ? '<button class="copy-btn" onclick="copyText('' + pid2 + '',this)" title="Copiar Discord ID">⧉</button>' : '<span class="cell-dim">—</span>') +
+        '</td>' +
         '<td>' + chipsHtml + '</td>' +
         '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.contribucion) + '</div></td>' +
         '<td>' + portHtml + '</td>' +
@@ -429,16 +442,16 @@ tr.hidden-row{display:none;}
     document.getElementById('stat-testers').textContent = rows.length;
     document.getElementById('count-testers').textContent = rows.length;
     var tbody = document.getElementById('tbody-testers');
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Sin registros aún</td></tr>'; return; }
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Sin registros aún</td></tr>'; return; }
     tbody.innerHTML = rows.map(function(r,i){
+      var pid = r.discord_provider_id || '';
       var uid = r.discord_user_id || '';
       return '<tr>' +
         '<td class="cell-dim mono">' + (i+1) + '</td>' +
         '<td class="mono">' + esc(r.roblox_username) + '</td>' +
         '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
-        '<td class="cell-dim mono" style="font-size:.62rem;">' + esc(uid) +
-          (uid ? '<button class="copy-btn" onclick="copyText(\'' + uid + '\',this)" title="Copiar ID">⧉</button>' : '') +
-        '</td>' +
+        '<td class="mono" style="font-size:.7rem;">' + (pid ? esc(pid) + '<button class="copy-btn" onclick="copyText(\'' + pid + '\',this)" title="Copiar Discord ID numérico">⧉</button>' : '<span class=\"cell-dim\">—</span>') + '</td>' +
+        '<td class="cell-dim mono" style="font-size:.58rem;opacity:.4;">' + esc(uid.slice(0,8)) + '…</td>' +
         '<td class="cell-dim mono" style="white-space:nowrap">' + fmt(r.created_at) + '</td>' +
         '</tr>';
     }).join('');
@@ -546,10 +559,12 @@ tr.hidden-row{display:none;}
         var skills = Array.isArray(r.habilidades) ? r.habilidades : [];
         var chipsHtml = skills.length ? '<div class="chip-list">' + skills.map(function(s){ return '<span class="chip-sm">'+esc(s)+'</span>'; }).join('') + '</div>' : '<span class="cell-dim">—</span>';
         var statusOpts = STATUS_OPTS.map(function(s){ return '<option value="'+s+'"'+(s==='pendiente'?' selected':'')+'>' + s + '</option>'; }).join('');
+        var pid_prt = r.discord_provider_id || '';
         prependRow('postulaciones',
           '<td class="cell-dim mono">—</td>' +
           '<td class="mono">' + esc(r.roblox_username) + '</td>' +
           '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
+          '<td class="mono" style="font-size:.68rem;">' + esc(pid_prt) + (pid_prt ? '<button class="copy-btn" onclick="copyText(''+pid_prt+'',this)">⧉</button>' : '<span class="cell-dim">—</span>') + '</td>' +
           '<td>' + chipsHtml + '</td>' +
           '<td><div class="cell-text" onclick="expandCell(this)">' + esc(r.contribucion) + '</div></td>' +
           '<td>' + (r.portfolio_url ? '<a href="'+esc(r.portfolio_url)+'" target="_blank" class="discord-link">↗ ver</a>' : '<span class="cell-dim">archivo</span>') + '</td>' +
@@ -559,12 +574,14 @@ tr.hidden-row{display:none;}
       .on('postgres_changes', {event:'INSERT',schema:'public',table:'testers'}, function(p){
         var r = p.new;
         _cache.testers.unshift(r);
-        var uid = r.discord_user_id || '';
+        var pid_rt = r.discord_provider_id || '';
+        var uid_rt = r.discord_user_id || '';
         prependRow('testers',
           '<td class="cell-dim mono">—</td>' +
           '<td class="mono">' + esc(r.roblox_username) + '</td>' +
           '<td class="cell-dim mono">' + esc(r.discord_username) + '</td>' +
-          '<td class="cell-dim mono" style="font-size:.62rem;">' + esc(uid) + (uid ? '<button class="copy-btn" onclick="copyText(\''+uid+'\',this)">⧉</button>' : '') + '</td>' +
+          '<td class="mono" style="font-size:.7rem;">' + (pid_rt ? esc(pid_rt) + '<button class="copy-btn" onclick="copyText(\''+pid_rt+'\',this)">⧉</button>' : '<span class=\"cell-dim\">—</span>') + '</td>' +
+          '<td class="cell-dim mono" style="font-size:.58rem;opacity:.4;">' + esc(uid_rt.slice(0,8)) + '…</td>' +
           '<td class="cell-dim mono">' + fmt(r.created_at) + '</td>');
       })
       .subscribe();
