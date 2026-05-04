@@ -963,43 +963,58 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   }
 
   async function submitPost() {
-    var roblox = document.getElementById('post-roblox').value.trim();
-    var contrib = document.getElementById('post-contrib').value.trim();
-    var isUpload = document.getElementById('tab-upload').classList.contains('active');
-    var hasFile = document.getElementById('post-file').files.length > 0;
-    var portUrl = document.getElementById('post-url') ? document.getElementById('post-url').value.trim() : '';
-    var hasPort = isUpload ? hasFile : portUrl.length > 0;
-    if (!roblox) { flashBorder('post-roblox'); return; }
-    if (!contrib) { flashBorder('post-contrib'); return; }
-    if (!hasPort) { flashBorder(isUpload ? 'post-dropzone' : 'post-url'); return; }
-    var skills = Array.from(document.querySelectorAll('#skills-grid .chip.sel')).map(function(c){return c.textContent.trim();});
-    var meta = currentUser ? (currentUser.user_metadata || {}) : {};
-    var res = await sbInsert('postulaciones', {
-      roblox_username: roblox,
-      discord_username: document.getElementById('post-discord').value.trim() || (currentUser ? (meta.full_name || meta.user_name || null) : null),
-      habilidades: skills,
-      contribucion: contrib,
-      portfolio_url: isUpload ? null : (portUrl || null),
-      discord_user_id: currentUser ? currentUser.id : null
-    });
-    if (res && res.error) { console.warn('Supabase:', res.error.message); }
-    document.getElementById('post-form').style.display = 'none';
-    document.getElementById('post-success').classList.add('show');
+  if (!currentUser) {
+    var loginMsg = document.getElementById('post-login-msg');
+    if (loginMsg) { loginMsg.style.display = 'block'; }
+    await loginDiscord();
+    return;
   }
+  var roblox = document.getElementById('post-roblox').value.trim();
+  var contrib = document.getElementById('post-contrib').value.trim();
+  var isUpload = document.getElementById('tab-upload').classList.contains('active');
+  var hasFile = document.getElementById('post-file').files.length > 0;
+  var portUrl = document.getElementById('post-url') ? document.getElementById('post-url').value.trim() : '';
+  var hasPort = isUpload ? hasFile : portUrl.length > 0;
+  if (!roblox) { flashBorder('post-roblox'); return; }
+  if (!contrib) { flashBorder('post-contrib'); return; }
+  if (!hasPort) { flashBorder(isUpload ? 'post-dropzone' : 'post-url'); return; }
+  var skills = Array.from(document.querySelectorAll('#skills-grid .chip.sel')).map(function(c){return c.textContent.trim();});
+  var meta = currentUser.user_metadata || {};
+  var res = await sbInsert('postulaciones', {
+    roblox_username: roblox,
+    discord_username: document.getElementById('post-discord').value.trim() || (meta.full_name || meta.user_name || null),
+    habilidades: skills,
+    contribucion: contrib,
+    portfolio_url: isUpload ? null : (portUrl || null),
+    discord_user_id: currentUser.id
+  });
+  if (res && res.error) { console.warn('Supabase:', res.error.message); }
+  document.getElementById('post-form').style.display = 'none';
+  document.getElementById('post-success').classList.add('show');
+}
 
   async function submitTester() {
-    var roblox = document.getElementById('tester-roblox').value.trim();
-    if (!roblox) { flashBorder('tester-roblox'); return; }
-    var meta = currentUser ? (currentUser.user_metadata || {}) : {};
-    var res = await sbInsert('testers', {
-      roblox_username: roblox,
-      discord_username: document.getElementById('tester-discord').value.trim() || (currentUser ? (meta.full_name || meta.user_name || null) : null),
-      discord_user_id: currentUser ? currentUser.id : null
-    });
-    if (res && res.error) { console.warn('Supabase:', res.error.message); }
-    document.getElementById('tester-form').style.display = 'none';
-    document.getElementById('tester-success').classList.add('show');
+  if (!currentUser) {
+    // Mostrar mensaje y forzar login
+    var hint = document.getElementById('tester-discord');
+    if (hint) { flashBorder('tester-discord'); }
+    var loginMsg = document.getElementById('tester-login-msg');
+    if (loginMsg) { loginMsg.style.display = 'block'; }
+    await loginDiscord();
+    return;
   }
+  var roblox = document.getElementById('tester-roblox').value.trim();
+  if (!roblox) { flashBorder('tester-roblox'); return; }
+  var meta = currentUser.user_metadata || {};
+  var res = await sbInsert('testers', {
+    roblox_username: roblox,
+    discord_username: document.getElementById('tester-discord').value.trim() || (meta.full_name || meta.user_name || null),
+    discord_user_id: currentUser.id
+  });
+  if (res && res.error) { console.warn('Supabase:', res.error.message); }
+  document.getElementById('tester-form').style.display = 'none';
+  document.getElementById('tester-success').classList.add('show');
+}
 </script>
 </body>
 </html>
