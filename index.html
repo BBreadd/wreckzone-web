@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WreckZone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Pacifico&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --m:#FF00FF;--c:#00FFFF;--y:#FFE600;
+  --bg:#04000A;--glass:rgba(8,0,18,0.55);--gb:rgba(255,255,255,0.10);
+}
+html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-family:'Share Tech Mono',monospace;color:#fff;}
+
+.grain{pointer-events:none;position:fixed;inset:-50%;width:200%;height:200%;z-index:200;opacity:0.032;animation:grainShift .14s steps(1) infinite;}
+@keyframes grainShift{0%{transform:translate(0,0)}10%{transform:translate(-3%,-4%)}20%{transform:translate(5%,2%)}30%{transform:translate(-2%,6%)}40%{transform:translate(4%,-3%)}50%{transform:translate(-5%,1%)}60%{transform:translate(2%,5%)}70%{transform:translate(-4%,-2%)}80%{transform:translate(3%,4%)}90%{transform:translate(-1%,-5%)}100%{transform:translate(0,0)}}
+
+.scanlines{pointer-events:none;position:fixed;inset:0;z-index:199;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.09) 3px,rgba(0,0,0,0.09) 4px);}
+
+.bg-video-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg-video-wrap video{width:100%;height:100%;object-fit:cover;will-change:transform;}
+.bg-overlay{position:absolute;inset:0;transition:background .6s ease;}
+
+.bg-overlay.hero{
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 100%, rgba(120,0,200,0.28) 0%, transparent 70%),
+    linear-gradient(to bottom, rgba(4,0,10,0.38) 0%, rgba(4,0,10,0.08) 35%, rgba(4,0,10,0.42) 100%);
+}
+.bg-overlay.hub{
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 100%, rgba(80,0,160,0.22) 0%, transparent 65%),
+    linear-gradient(to bottom, rgba(4,0,10,0.52) 0%, rgba(4,0,10,0.22) 40%, rgba(4,0,10,0.58) 100%);
+}
+.bg-overlay.deep{
+  background:
+    linear-gradient(to bottom, rgba(4,0,10,0.72) 0%, rgba(4,0,10,0.62) 50%, rgba(4,0,10,0.78) 100%);
+}
+
+.deco-scene{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;opacity:0;transition:opacity 1.1s ease;}
+.deco-scene.active{opacity:1;}
+.deco-el{position:absolute;}
+
+.neon-sign{font-family:'Orbitron',sans-serif;letter-spacing:.28em;text-transform:uppercase;padding:.45rem 1.1rem;border-radius:4px;border:1.5px solid;line-height:1;}
+.ns-yellow{color:#FFE600;border-color:rgba(255,230,0,.45);text-shadow:0 0 8px #FFE600,0 0 22px #FFE600,0 0 45px rgba(255,230,0,.5);box-shadow:0 0 18px rgba(255,230,0,.18),inset 0 0 10px rgba(255,230,0,.06);}
+.ns-cyan{color:#00FFFF;border-color:rgba(0,255,255,.4);text-shadow:0 0 8px #00FFFF,0 0 22px #00FFFF;box-shadow:0 0 18px rgba(0,255,255,.15),inset 0 0 8px rgba(0,255,255,.05);}
+.ns-magenta{color:#FF00FF;border-color:rgba(255,0,255,.4);text-shadow:0 0 8px #FF00FF,0 0 22px #FF00FF;box-shadow:0 0 18px rgba(255,0,255,.15),inset 0 0 8px rgba(255,0,255,.05);}
+.ns-purple{color:#c084fc;border-color:rgba(157,77,255,.45);text-shadow:0 0 8px #9D4DFF,0 0 22px #9D4DFF;box-shadow:0 0 18px rgba(157,77,255,.2),inset 0 0 8px rgba(157,77,255,.06);}
+
+@keyframes signFlicker{0%,91%,93%,95%,100%{opacity:1}92%{opacity:.25}94%{opacity:.8}96%{opacity:.15}97%{opacity:1}98%{opacity:.5}99%{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes flickerSub{0%,95%,100%{opacity:1}96%{opacity:.7}97%{opacity:1}98%{opacity:.5}99%{opacity:1}}
+@keyframes glitchTop{0%,90%,100%{transform:translate(0);opacity:0}91%{transform:translate(-4px,2px);opacity:.8}93%{transform:translate(4px,-2px);opacity:.8}95%{transform:translate(-2px,0);opacity:0}}
+@keyframes glitchBot{0%,88%,100%{transform:translate(0);opacity:0}89%{transform:translate(6px,-1px);opacity:.7}91%{transform:translate(-6px,1px);opacity:.7}93%{transform:translate(0);opacity:0}}
+@keyframes neonFlicker{0%,10%,12%,40%,42%,100%{box-shadow:0 0 30px rgba(255,0,255,.9),0 0 60px rgba(255,0,255,.5),0 0 100px rgba(0,255,255,.4)}11%,41%{box-shadow:0 0 8px rgba(255,0,255,.4),0 0 20px rgba(255,0,255,.2)}}
+@keyframes horizonPulse{0%,100%{opacity:.7;box-shadow:0 0 40px 8px var(--m),0 0 80px 20px rgba(255,0,255,.25)}50%{opacity:1;box-shadow:0 0 55px 12px var(--m),0 0 110px 28px rgba(255,0,255,.38)}}
+
+.footer-strip{position:fixed;bottom:0;left:0;right:0;z-index:150;padding:.65rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.22em;color:rgba(255,255,255,.18);border-top:1px solid rgba(255,255,255,.05);background:rgba(4,0,10,.7);backdrop-filter:blur(12px);}
+.footer-strip .accent{color:var(--m);}
+@media(max-width:480px){.footer-strip span:nth-child(2){display:none;}}
+
+#top-nav{position:fixed;top:0;left:0;right:0;z-index:150;padding:.85rem 1.5rem;display:flex;align-items:center;gap:1rem;opacity:0;pointer-events:none;transition:opacity .35s;background:linear-gradient(to bottom,rgba(4,0,10,.9),transparent);backdrop-filter:blur(8px);}
+#top-nav.visible{opacity:1;pointer-events:all;}
+.nav-back{background:none;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.7);font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;padding:.45rem 1rem;border-radius:4px;cursor:pointer;transition:border-color .2s,color .2s;display:flex;align-items:center;gap:.5rem;}
+.nav-back:hover{border-color:var(--c);color:var(--c);}
+.nav-breadcrumb{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.25em;color:rgba(255,255,255,.28);text-transform:uppercase;}
+.nav-breadcrumb span{color:var(--m);}
+
+.page{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;transform:translateX(70px) scale(.98);transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .45s ease;}
+.page.active{opacity:1;pointer-events:all;transform:translateX(0) scale(1);}
+.page.from-left{transform:translateX(-70px) scale(.98);opacity:0;}
+
+.ri{opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease;}
+.ri.vis{opacity:1;transform:translateY(0);}
+
+.glass-card{background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-radius:16px;padding:2.5rem 3rem;box-shadow:0 0 0 1px rgba(255,0,255,.06),0 8px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;}
+.glass-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(to right,transparent,var(--c),var(--m),transparent);box-shadow:0 0 10px 1px var(--c);}
+@media(max-width:600px){.glass-card{padding:1.5rem 1.4rem;}}
+
+.btn-primary{position:relative;display:inline-block;font-family:'Orbitron',sans-serif;font-weight:700;font-size:clamp(.8rem,1.8vw,1rem);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:#000;background:linear-gradient(135deg,var(--m),var(--c));padding:1rem 2.5rem;border-radius:6px;border:none;cursor:pointer;overflow:hidden;box-shadow:0 0 20px rgba(255,0,255,.6),0 0 40px rgba(255,0,255,.3);transition:box-shadow .15s,transform .15s;}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c),var(--m));opacity:0;transition:opacity .15s;}
+.btn-primary span{position:relative;z-index:1;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(255,0,255,.9),0 0 60px rgba(255,0,255,.5),0 0 100px rgba(0,255,255,.4);animation:neonFlicker .8s steps(1) infinite;}
+.btn-primary:hover::before{opacity:1;}
+.btn-primary:active{transform:scale(.97);}
+
+.btn-ghost{font-family:'Share Tech Mono',monospace;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.38);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:2px;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;transition:color .2s,border-color .2s;}
+.btn-ghost:hover{color:var(--c);border-color:var(--c);}
+
+.badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,0,255,.08);border:1px solid rgba(255,0,255,.3);border-radius:999px;padding:.35rem 1rem;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--m);font-family:'Share Tech Mono',monospace;}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--m);box-shadow:0 0 8px var(--m);animation:pulse 1.5s ease-in-out infinite;}
+
+.section-label{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.35em;color:var(--c);margin-bottom:.8rem;}
+.section-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(1.8rem,4.5vw,3.5rem);color:#fff;text-shadow:0 0 10px #fff,0 0 30px var(--c),0 0 60px rgba(0,255,255,.4);line-height:1.1;margin-bottom:.5rem;}
+.section-title em{font-style:normal;color:var(--m);text-shadow:0 0 10px var(--m),0 0 30px var(--m),0 0 60px rgba(255,0,255,.5);}
+.divider{width:120px;height:2px;background:linear-gradient(to right,transparent,var(--m),var(--c),transparent);box-shadow:0 0 10px var(--m);margin-bottom:2.5rem;}
+
+.hero-content{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem 6rem;text-align:center;}
+.subtitle-script{font-family:'Pacifico',cursive;font-size:clamp(1.2rem,3vw,2.2rem);color:var(--c);text-shadow:0 0 8px var(--c),0 0 24px var(--c),0 0 48px rgba(0,255,255,.6);letter-spacing:.05em;margin-bottom:1.2rem;animation:flickerSub 5s infinite;}
+.main-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(3.2rem,12vw,11rem);line-height:1;letter-spacing:.04em;color:#fff;text-shadow:0 0 10px #fff,0 0 30px var(--m),0 0 60px var(--m),0 0 100px rgba(255,0,255,.5);position:relative;z-index:1;}
+.main-title::before,.main-title::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;font-family:'Orbitron',sans-serif;font-weight:900;font-size:inherit;letter-spacing:inherit;}
+.main-title::before{color:var(--c);text-shadow:none;clip-path:polygon(0 20%,100% 20%,100% 45%,0 45%);animation:glitchTop 4s infinite;opacity:.8;}
+.main-title::after{color:var(--m);text-shadow:none;clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);animation:glitchBot 4s infinite .3s;opacity:.8;}
+.tagline{font-family:'Share Tech Mono',monospace;font-size:clamp(.7rem,1.4vw,1rem);color:rgba(255,255,255,.55);letter-spacing:.35em;text-transform:uppercase;margin-bottom:2.5rem;}
+.tagline span{color:var(--m);}
+.hero-card{max-width:620px;width:100%;margin-bottom:2.5rem;}
+.card-body{font-family:'Share Tech Mono',monospace;font-size:clamp(.82rem,1.5vw,.98rem);color:rgba(255,255,255,.7);line-height:1.8;text-wrap:pretty;}
+.card-body strong{color:var(--c);font-weight:normal;}
+.hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:1.2rem;justify-content:center;}
+
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem;width:100%;max-width:800px;margin:0 auto;}
+@media(max-width:520px){.hub-grid{grid-template-columns:1fr;}}
+.hub-card{background:rgba(8,0,18,0.52);border:1px solid var(--gb);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:1.8rem 1.6rem;cursor:pointer;position:relative;overflow:hidden;transition:border-color .25s,box-shadow .25s,transform .25s;text-decoration:none;display:block;}
+.hub-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--card-color,var(--c)),transparent);box-shadow:0 0 12px 2px var(--card-color,var(--c));opacity:.7;}
+.hub-card:hover:not(.disabled){border-color:var(--card-color,var(--c));box-shadow:0 0 30px rgba(0,255,255,.1),0 8px 32px rgba(0,0,0,.5);transform:translateY(-4px);}
+.hub-card.disabled{opacity:.45;cursor:not-allowed;}
+.hub-card-icon{margin-bottom:1.1rem;}
+.hub-card-title{font-family:'Orbitron',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin-bottom:.45rem;}
+.hub-card-desc{font-family:'Share Tech Mono',monospace;font-size:.76rem;color:rgba(255,255,255,.42);line-height:1.65;}
+.hub-card-tag{position:absolute;top:1rem;right:1rem;font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;padding:.22rem .55rem;border-radius:999px;border:1px solid currentColor;}
+.tag-soon{color:var(--y);border-color:rgba(255,230,0,.35);background:rgba(255,230,0,.07);}
+.tag-active{color:var(--c);border-color:rgba(0,255,255,.35);background:rgba(0,255,255,.07);}
+
+.form-page{max-width:700px;width:100%;margin:0 auto;padding:5rem 1.2rem 7rem;}
+@media(max-width:600px){.form-page{padding:4.5rem 1rem 6rem;}}
+.form-title-row{margin-bottom:2.5rem;}
+.form-intro{font-family:'Share Tech Mono',monospace;font-size:.85rem;color:rgba(255,255,255,.48);line-height:1.75;margin-top:1rem;}
+
+.neon-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:1.1rem 1.3rem;font-family:'Share Tech Mono',monospace;font-size:.86rem;color:#fff;resize:none;line-height:1.7;transition:border-color .2s,box-shadow .2s;outline:none;}
+.neon-textarea:focus{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 0 20px rgba(0,255,255,.15);}
+.neon-textarea::placeholder{color:rgba(255,255,255,.2);}
+.char-counter{text-align:right;font-size:.68rem;letter-spacing:.15em;color:rgba(255,255,255,.28);margin-top:.5rem;font-family:'Share Tech Mono',monospace;}
+.char-counter.warn{color:var(--y);}
+.char-counter.over{color:var(--m);}
+
+.question-block{margin-bottom:1.8rem;transition:opacity .3s;}
+.question-text{font-family:'Orbitron',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;color:rgba(255,255,255,.85);margin-bottom:1rem;line-height:1.5;}
+.yn-row{display:flex;gap:.8rem;margin-bottom:1rem;}
+.yn-btn{font-family:'Share Tech Mono',monospace;font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;padding:.5rem 1.3rem;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:none;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s;}
+.yn-btn:hover{border-color:rgba(255,255,255,.5);color:#fff;}
+.yn-btn.selected-yes{border-color:var(--c);color:var(--c);background:rgba(0,255,255,.08);box-shadow:0 0 12px rgba(0,255,255,.2);}
+.yn-btn.selected-no{border-color:rgba(255,255,255,.35);color:rgba(255,255,255,.5);}
+.answer-area{overflow:hidden;max-height:0;opacity:0;transition:max-height .4s cubic-bezier(.22,1,.36,1),opacity .35s ease;}
+.answer-area.open{max-height:200px;opacity:1;}
+
+.progress-bar-wrap{background:rgba(255,255,255,.06);border-radius:999px;height:3px;margin-bottom:2.5rem;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(to right,var(--m),var(--c));border-radius:999px;transition:width .5s cubic-bezier(.22,1,.36,1);box-shadow:0 0 8px var(--c);}
+
+.success-state{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:1.5rem;}
+.success-state.show{display:flex;animation:fadeInUp .6s ease both;}
+.success-icon svg{filter:drop-shadow(0 0 16px var(--c));}
+.success-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(1.5rem,4vw,2.5rem);color:#fff;text-shadow:0 0 20px var(--c);}
+.success-sub{font-family:'Share Tech Mono',monospace;font-size:.86rem;color:rgba(255,255,255,.48);letter-spacing:.1em;}
+
+.soon-page{max-width:600px;width:100%;margin:0 auto;padding:5rem 1.2rem 7rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;gap:1.5rem;}
+.soon-label{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.35em;color:var(--y);animation:flickerSub 3s infinite;}
+.soon-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(2.2rem,7vw,5rem);color:var(--y);text-shadow:0 0 20px var(--y),0 0 60px rgba(255,230,0,.4);letter-spacing:.06em;}
+.soon-desc{font-family:'Share Tech Mono',monospace;font-size:.83rem;color:rgba(255,255,255,.44);line-height:1.8;max-width:440px;}
+.connect-btns{display:flex;flex-direction:column;gap:.9rem;width:100%;max-width:340px;margin-top:.5rem;}
+.connect-btn{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.2rem;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);font-family:'Share Tech Mono',monospace;font-size:.8rem;letter-spacing:.12em;color:rgba(255,255,255,.55);cursor:not-allowed;opacity:.55;}
+
+.neon-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:.82rem 1rem;font-family:'Share Tech Mono',monospace;font-size:.86rem;color:#fff;outline:none;transition:border-color .2s,box-shadow .2s;}
+.neon-input:focus{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 0 18px rgba(0,255,255,.14);}
+.neon-input::placeholder{color:rgba(255,255,255,.2);}
+.input-label{font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:.5rem;display:block;}
+.input-label .req{color:var(--m);}
+.input-group{margin-bottom:1.3rem;}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media(max-width:560px){.input-row{grid-template-columns:1fr;}}
+
+.chips-grid{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.8rem;}
+.chip{font-family:'Share Tech Mono',monospace;font-size:.73rem;letter-spacing:.15em;text-transform:uppercase;padding:.45rem .9rem;border-radius:6px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(255,255,255,.48);cursor:pointer;transition:all .2s;user-select:none;}
+.chip:hover{border-color:rgba(0,255,255,.5);color:rgba(0,255,255,.8);}
+.chip.sel{border-color:var(--c);background:rgba(0,255,255,.1);color:var(--c);box-shadow:0 0 12px rgba(0,255,255,.2);}
+
+.dropzone{position:relative;border:1.5px dashed rgba(255,255,255,.18);border-radius:10px;padding:2.2rem 1.5rem;text-align:center;cursor:pointer;transition:border-color .25s,background .25s;}
+.dropzone:hover,.dropzone.dragover{border-color:var(--c);background:rgba(0,255,255,.04);box-shadow:0 0 20px rgba(0,255,255,.1);}
+.dropzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.dropzone-icon{margin-bottom:.8rem;}
+.dropzone-title{font-family:'Orbitron',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.1em;color:rgba(255,255,255,.55);margin-bottom:.4rem;}
+.dropzone-sub{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.28);letter-spacing:.1em;line-height:1.6;}
+.dropzone-sub span{color:var(--c);}
+.file-preview{display:none;align-items:center;gap:1rem;background:rgba(0,255,255,.06);border:1px solid rgba(0,255,255,.25);border-radius:8px;padding:.85rem 1.1rem;margin-top:.8rem;}
+.file-preview.show{display:flex;}
+.file-preview-name{font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--c);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-preview-size{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:rgba(255,255,255,.28);}
+.file-remove{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:1rem;line-height:1;padding:.2rem;transition:color .2s;}
+.file-remove:hover{color:var(--m);}
+
+.port-toggle{display:flex;gap:0;margin-bottom:1.2rem;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.14);}
+.port-tab{flex:1;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;padding:.6rem;background:none;border:none;color:rgba(255,255,255,.32);cursor:pointer;transition:all .2s;}
+.port-tab.active{background:rgba(0,255,255,.1);color:var(--c);}
+
+.form-section{margin-bottom:2rem;}
+.form-section-title{font-family:'Orbitron',sans-serif;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:1.1rem;display:flex;align-items:center;gap:.8rem;}
+.form-section-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
+
+.tester-page{max-width:580px;width:100%;margin:0 auto;padding:5rem 1.2rem 7rem;}
+.discord-badge{display:inline-flex;align-items:center;gap:.7rem;background:rgba(88,101,242,.15);border:1px solid rgba(88,101,242,.4);border-radius:8px;padding:.65rem 1.1rem;font-family:'Share Tech Mono',monospace;font-size:.76rem;letter-spacing:.12em;color:#7289da;margin-bottom:2rem;}
+.tester-perk{display:flex;align-items:flex-start;gap:.9rem;padding:.85rem 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.tester-perk:last-child{border-bottom:none;}
+.tester-perk-dot{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);flex-shrink:0;margin-top:.35rem;}
+.tester-perk-text{font-family:'Share Tech Mono',monospace;font-size:.78rem;color:rgba(255,255,255,.48);line-height:1.65;}
+.tester-perk-text strong{color:rgba(255,255,255,.75);font-weight:normal;}
+
+.info-page{max-width:880px;width:100%;margin:0 auto;padding:5rem 1.2rem 7rem;}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;margin-bottom:2rem;}
+.pillar{background:rgba(8,0,18,0.52);border:1px solid var(--gb);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:12px;padding:1.6rem 1.5rem;position:relative;overflow:hidden;transition:border-color .2s,box-shadow .2s;}
+.pillar::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(to right,transparent,var(--c),transparent);}
+.pillar:hover{border-color:rgba(0,255,255,.3);box-shadow:0 0 24px rgba(0,255,255,.1);}
+.pillar-icon{margin-bottom:1rem;}
+.pillar-title{font-family:'Orbitron',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.1em;color:#fff;margin-bottom:.55rem;text-transform:uppercase;}
+.pillar-text{font-family:'Share Tech Mono',monospace;font-size:.76rem;color:rgba(255,255,255,.42);line-height:1.7;}
+.dev-note{padding:1.8rem 2rem;}
+.dev-note-inner{display:flex;gap:1.5rem;align-items:flex-start;}
+@media(max-width:520px){.dev-note-inner{flex-direction:column;gap:1rem;}}
+.dev-avatar{flex-shrink:0;margin-top:.2rem;}
+.dev-label{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.3em;color:var(--m);margin-bottom:.6rem;}
+
+.horizon-glow{position:fixed;bottom:38vh;left:50%;transform:translateX(-50%);width:70vw;height:2px;background:linear-gradient(to right,transparent,var(--m),var(--c),var(--m),transparent);box-shadow:0 0 40px 8px var(--m),0 0 80px 20px rgba(255,0,255,.3);z-index:1;pointer-events:none;animation:horizonPulse 4s ease-in-out infinite;}
+</style>
+</head>
+<body>
+
+<svg class="grain" xmlns="http://www.w3.org/2000/svg"><filter id="gf" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#gf)"/></svg>
+<div class="scanlines"></div>
+
+<div class="bg-video-wrap">
+  <video id="bg-vid" autoplay muted loop playsinline>
+    <source src="uploads/vecteezy_loop-purple-pink-sun-reflected-in-the-water-in-a-minimalist_37336512.mp4" type="video/mp4">
+  </video>
+  <div class="bg-overlay hero" id="bg-overlay"></div>
+</div>
+
+<div class="horizon-glow"></div>
+
+<div class="deco-scene active" id="deco-hero"></div>
+
+<div class="deco-scene" id="deco-hub">
+  <div class="deco-el neon-sign ns-yellow" style="top:90px;right:48px;font-size:.76rem;animation:signFlicker 5s infinite 2s;">INSERT COIN</div>
+  <div class="deco-el neon-sign ns-cyan" style="top:142px;right:48px;font-size:.6rem;opacity:.65;animation:signFlicker 7s infinite;">GAME ROOM</div>
+</div>
+
+<div class="deco-scene" id="deco-info">
+  <div class="deco-el neon-sign ns-cyan" style="bottom:85px;left:22px;opacity:.32;font-size:.63rem;">DEV LOG</div>
+  <div class="deco-el neon-sign ns-magenta" style="bottom:132px;left:22px;opacity:.28;font-size:.56rem;animation:signFlicker 6s infinite 1s;">ALPHA BUILD</div>
+</div>
+
+<div class="deco-scene" id="deco-feedback">
+  <div class="deco-el neon-sign ns-magenta" style="bottom:85px;right:22px;opacity:.3;font-size:.6rem;animation:signFlicker 7s infinite 2s;">FEEDBACK</div>
+</div>
+
+<div class="deco-scene" id="deco-sugerencias">
+  <div class="deco-el neon-sign ns-magenta" style="top:120px;right:40px;opacity:.38;font-size:.68rem;animation:signFlicker 8s infinite;">IDEAS</div>
+  <div class="deco-el neon-sign ns-yellow" style="top:174px;right:40px;opacity:.28;font-size:.56rem;">BRAINSTORM</div>
+</div>
+
+<div class="deco-scene" id="deco-post">
+  <div class="deco-el neon-sign ns-cyan" style="top:100px;left:22px;opacity:.38;font-size:.66rem;animation:signFlicker 6s infinite 3s;">OPEN ROLES</div>
+  <div class="deco-el neon-sign ns-magenta" style="top:152px;left:22px;opacity:.28;font-size:.56rem;">JOIN THE CREW</div>
+</div>
+
+<div class="deco-scene" id="deco-tester">
+  <div class="deco-el neon-sign ns-purple" style="top:100px;right:28px;opacity:.48;font-size:.86rem;animation:signFlicker 4s infinite 1s;">BETA ACCESS</div>
+  <div class="deco-el neon-sign ns-purple" style="top:155px;right:28px;opacity:.32;font-size:.58rem;">TESTER PROGRAM</div>
+</div>
+
+<div class="deco-scene" id="deco-vote">
+  <div class="deco-el neon-sign ns-yellow" style="top:100px;left:22px;opacity:.38;font-size:.68rem;animation:signFlicker 5s infinite 2s;">LOCKED</div>
+</div>
+
+<nav id="top-nav">
+  <button class="nav-back" id="nav-back-btn">&#8592; Volver</button>
+  <span class="nav-breadcrumb">WRECKZONE <span>/ <span id="nav-title">HUB</span></span></span>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:.8rem;">
+    <div id="user-badge" style="display:none;align-items:center;gap:.6rem;background:rgba(88,101,242,.12);border:1px solid rgba(88,101,242,.3);border-radius:999px;padding:.3rem .85rem .3rem .4rem;"></div>
+    <button id="discord-login-btn" onclick="loginDiscord()" style="display:flex;align-items:center;gap:.55rem;background:rgba(88,101,242,.18);border:1px solid rgba(88,101,242,.4);border-radius:999px;padding:.35rem .9rem;font-family:'Share Tech Mono',monospace;font-size:.66rem;letter-spacing:.15em;color:#7289da;cursor:pointer;transition:background .2s,box-shadow .2s;" onmouseover="this.style.background='rgba(88,101,242,.32)';this.style.boxShadow='0 0 14px rgba(88,101,242,.35)'" onmouseout="this.style.background='rgba(88,101,242,.18)';this.style.boxShadow='none'">
+      <svg width="16" height="12" viewBox="0 0 22 16" fill="none"><path d="M18.59 1.37A18.1 18.1 0 0014.2.04a.07.07 0 00-.07.03c-.18.33-.39.76-.53 1.1a16.7 16.7 0 00-5.19 0A11.3 11.3 0 007.87.07a.07.07 0 00-.07-.03A18.1 18.1 0 003.41 1.37a.06.06 0 00-.03.03C.5 5.75-.3 10 .09 14.2a.07.07 0 00.03.05 18.2 18.2 0 005.49 2.8.07.07 0 00.08-.03c.42-.58.8-1.2 1.12-1.85a.07.07 0 00-.04-.1 12 12 0 01-1.72-.83.07.07 0 010-.12l.34-.27a.07.07 0 01.07-.01c3.61 1.66 7.52 1.66 11.09 0a.07.07 0 01.07.01l.34.27a.07.07 0 010 .12 11.3 11.3 0 01-1.72.82.07.07 0 00-.04.1c.33.65.71 1.27 1.12 1.86a.07.07 0 00.08.03 18.2 18.2 0 005.5-2.8.07.07 0 00.02-.05c.46-4.87-.77-9.09-3.28-12.83a.06.06 0 00-.03-.03z" fill="#7289da"/></svg>
+      Login Discord
+    </button>
+  </div>
+</nav>
+
+<div class="footer-strip">
+  <span>WRECKZONE <span class="accent">©</span> 2026</span>
+  <span>ROBLOX EXPERIENCE</span>
+  <span><span class="accent">SYS</span> · ONLINE</span>
+</div>
+
+<div class="page active" id="page-hero">
+  <div class="hero-content">
+    <div class="badge ri"><div class="badge-dot"></div>Alpha · Roblox Experience</div>
+    <p class="subtitle-script ri" style="transition-delay:.1s">Bienvenido a</p>
+    <div class="ri" style="transition-delay:.2s">
+      <h1 class="main-title" data-text="WRECKZONE">WRECKZONE</h1>
+    </div>
+    <p class="tagline ri" style="transition-delay:.3s"><span>//</span> caos. movilidad. destrucción. <span>//</span></p>
+    <div class="glass-card hero-card ri" style="transition-delay:.4s">
+      <p class="card-body">WreckZone está en <strong>fase de desarrollo activo</strong> — y tu voz importa.<br>Comparte tu opinión, tus ideas, tu experiencia de juego.<br>Reporta bugs y postúlate para ser parte de este <strong>equipo independiente</strong>.</p>
+    </div>
+    <div class="hero-actions ri" style="transition-delay:.5s">
+      <button class="btn-primary" onclick="navigate('page-hub')"><span>Entrar al Feedback</span></button>
+      <button class="btn-ghost" onclick="navigate('page-info')">¿Qué es WreckZone?</button>
+    </div>
+    <div id="hero-user-hint" class="ri" style="transition-delay:.62s;margin-top:.8rem;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.2em;color:rgba(255,255,255,.22);display:none;">
+      Logueado como <span id="hero-user-name" style="color:rgba(157,77,255,.8);"></span>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-info">
+  <div class="info-page">
+    <div class="ri" style="text-align:center;margin-bottom:2.5rem;">
+      <p class="section-label">// SOBRE EL JUEGO //</p>
+      <h2 class="section-title">¿Qué es <em>WreckZone</em>?</h2>
+      <div class="divider" style="margin:0 auto 0;"></div>
+    </div>
+    <div class="glass-card ri" style="margin-bottom:2rem;transition-delay:.1s">
+      <p class="card-body" style="font-size:clamp(.92rem,1.7vw,1.02rem);color:rgba(255,255,255,.82);line-height:1.9;">
+        WreckZone es una experiencia de Roblox centrada en <strong>partidas cortas y frenéticas</strong> por rondas, donde el caos no es un accidente — es el sistema. Destruye el escenario, desbloquea objetos únicos y encuentra tu propio estilo de juego.<br><br>
+        El loop es simple y satisfactorio: <strong>lobby → vota mapa y modo → partida → recompensas → repite</strong>. Sin delays injustos, sin retrasos visuales. La fluidez del jugador es la prioridad absoluta.
+      </p>
+    </div>
+    <div class="pillars">
+      <div class="pillar ri" style="transition-delay:.15s">
+        <div class="pillar-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><polygon points="18,2 34,32 2,32" fill="none" stroke="#FF00FF" stroke-width="1.8" filter="drop-shadow(0 0 6px #FF00FF)"/><line x1="18" y1="12" x2="18" y2="22" stroke="#FF00FF" stroke-width="1.8"/><circle cx="18" cy="26" r="1.5" fill="#FF00FF"/></svg></div>
+        <h3 class="pillar-title">Destrucción Total</h3>
+        <p class="pillar-text">Los mapas reaccionan a cada partida. Objetos aleatorios del entorno o tu propio arsenal — cada ronda es irrepetible.</p>
+      </div>
+      <div class="pillar ri" style="transition-delay:.22s">
+        <div class="pillar-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="15" fill="none" stroke="#00FFFF" stroke-width="1.8" filter="drop-shadow(0 0 6px #00FFFF)"/><path d="M18 8 L22 18 L18 14 L14 18 Z" fill="#00FFFF"/><circle cx="18" cy="24" r="3" fill="none" stroke="#00FFFF" stroke-width="1.5"/></svg></div>
+        <h3 class="pillar-title">Tu Estilo</h3>
+        <p class="pillar-text">Habilidades especiales, loadouts personalizados, múltiples modos de juego. Adapta tu forma de destruir.</p>
+      </div>
+      <div class="pillar ri" style="transition-delay:.29s">
+        <div class="pillar-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="4" width="28" height="28" rx="4" fill="none" stroke="#FFE600" stroke-width="1.8" filter="drop-shadow(0 0 6px #FFE600)"/><path d="M10 18 L16 24 L26 12" fill="none" stroke="#FFE600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3 class="pillar-title">Votación Activa</h3>
+        <p class="pillar-text">La comunidad decide el próximo contenido. Mapas, modos, mecánicas — el juego evoluciona según lo que pidan los jugadores.</p>
+      </div>
+    </div>
+    <div class="glass-card dev-note ri" style="transition-delay:.35s">
+      <div class="dev-note-inner">
+        <div class="dev-avatar">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" fill="rgba(255,0,255,.08)" stroke="rgba(255,0,255,.3)" stroke-width="1.5"/><circle cx="24" cy="20" r="9" fill="none" stroke="#FF00FF" stroke-width="1.5"/><path d="M8 42 Q24 32 40 42" fill="none" stroke="#FF00FF" stroke-width="1.5"/></svg>
+        </div>
+        <div>
+          <p class="dev-label">// DEV NOTE //</p>
+          <p class="card-body">Este proyecto nació de cero, con una sola persona detrás de cada sistema. El objetivo no es copiar — es construir algo propio, con identidad, con mecánicas que den satisfacción real al jugador. Si llegaste hasta aquí, ya formas parte de esa historia.</p>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:2.5rem;" class="ri" style="transition-delay:.4s">
+      <button class="btn-primary" onclick="navigate('page-hub')"><span>Ir al Hub</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-hub">
+  <div style="max-width:860px;width:100%;margin:0 auto;padding:5rem 1.2rem 7rem;">
+    <div class="ri" style="text-align:center;margin-bottom:3rem;">
+      <p class="section-label">// ELIGE TU DESTINO //</p>
+      <h2 class="section-title">Centro de <em>WreckZone</em></h2>
+      <div class="divider" style="margin:0 auto;"></div>
+    </div>
+    <div class="hub-grid">
+      <button class="hub-card ri" style="--card-color:#00FFFF;transition-delay:.08s;text-align:left;" onclick="navigate('page-feedback')">
+        <span class="hub-card-tag tag-active">Activo</span>
+        <div class="hub-card-icon"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="6" width="32" height="26" rx="4" fill="none" stroke="#00FFFF" stroke-width="1.8" filter="drop-shadow(0 0 6px #00FFFF)"/><line x1="10" y1="14" x2="30" y2="14" stroke="#00FFFF" stroke-width="1.5" opacity=".6"/><line x1="10" y1="20" x2="24" y2="20" stroke="#00FFFF" stroke-width="1.5" opacity=".4"/><path d="M16 32 L20 38 L24 32" fill="none" stroke="#00FFFF" stroke-width="1.5" opacity=".7"/></svg></div>
+        <p class="hub-card-title">Feedback</p>
+        <p class="hub-card-desc">Reporta errores, comparte tu experiencia o deja un comentario directo al dev.</p>
+      </button>
+      <button class="hub-card ri" style="--card-color:#FF00FF;transition-delay:.16s;text-align:left;" onclick="navigate('page-sugerencias')">
+        <span class="hub-card-tag tag-active">Activo</span>
+        <div class="hub-card-icon"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="10" fill="none" stroke="#FF00FF" stroke-width="1.8" filter="drop-shadow(0 0 6px #FF00FF)"/><line x1="20" y1="12" x2="20" y2="18" stroke="#FF00FF" stroke-width="2"/><circle cx="20" cy="21" r="1.2" fill="#FF00FF"/><path d="M14 28 Q20 33 26 28" fill="none" stroke="#FF00FF" stroke-width="1.5" opacity=".6"/></svg></div>
+        <p class="hub-card-title">Sugerencias</p>
+        <p class="hub-card-desc">¿Tienes ideas para modos de juego, mapas o mecánicas? Cuéntanos todo.</p>
+      </button>
+      <button class="hub-card disabled ri" style="--card-color:#FFE600;transition-delay:.24s;text-align:left;">
+        <span class="hub-card-tag tag-soon">Pronto</span>
+        <div class="hub-card-icon"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="6" y="14" width="28" height="20" rx="3" fill="none" stroke="#FFE600" stroke-width="1.8" filter="drop-shadow(0 0 6px #FFE600)" opacity=".6"/><path d="M13 14 V10 A7 7 0 0 1 27 10 V14" fill="none" stroke="#FFE600" stroke-width="1.8" opacity=".6"/><circle cx="20" cy="24" r="3" fill="none" stroke="#FFE600" stroke-width="1.5" opacity=".7"/></svg></div>
+        <p class="hub-card-title">Votación</p>
+        <p class="hub-card-desc">Vota por el próximo contenido. Requiere cuenta vinculada. Cada jugador tiene 2 votos.</p>
+      </button>
+      <button class="hub-card ri" style="--card-color:#FF00FF;transition-delay:.32s;text-align:left;" onclick="navigate('page-postulaciones')">
+        <span class="hub-card-tag tag-active">Activo</span>
+        <div class="hub-card-icon"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="13" r="7" fill="none" stroke="#FF00FF" stroke-width="1.8" filter="drop-shadow(0 0 6px #FF00FF)"/><path d="M6 36 Q20 26 34 36" fill="none" stroke="#FF00FF" stroke-width="1.8"/><line x1="28" y1="7" x2="36" y2="7" stroke="#FF00FF" stroke-width="1.5" opacity=".6"/><line x1="28" y1="11" x2="34" y2="11" stroke="#FF00FF" stroke-width="1.5" opacity=".4"/><line x1="28" y1="15" x2="32" y2="15" stroke="#FF00FF" stroke-width="1.5" opacity=".25"/></svg></div>
+        <p class="hub-card-title">Postulaciones</p>
+        <p class="hub-card-desc">¿Quieres unirte al equipo? Demuestra tus habilidades y forma parte del proyecto.</p>
+      </button>
+      <button class="hub-card ri" style="--card-color:#9D4DFF;transition-delay:.40s;text-align:left;" onclick="navigate('page-tester')">
+        <span class="hub-card-tag" style="color:#9D4DFF;border-color:rgba(157,77,255,.35);background:rgba(157,77,255,.08);">Activo</span>
+        <div class="hub-card-icon"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="16" fill="none" stroke="#9D4DFF" stroke-width="1.8" filter="drop-shadow(0 0 6px #9D4DFF)"/><path d="M14 20 L18 24 L26 16" fill="none" stroke="#9D4DFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <p class="hub-card-title" style="color:#c084fc;">Sé un Tester</p>
+        <p class="hub-card-desc">¿Quieres probar WreckZone antes que nadie? Regístrate como tester oficial del proyecto.</p>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-feedback">
+  <div class="form-page">
+    <div class="form-title-row ri">
+      <p class="section-label">// FEEDBACK //</p>
+      <h2 class="section-title">Deja tu <em>Opinión</em></h2>
+      <div class="divider"></div>
+      <p class="form-intro">¿Encontraste un bug? ¿Algo que no funcionó como esperabas? ¿O simplemente quieres decir algo? Todo cuenta. Escribe con libertad.</p>
+    </div>
+    <div id="fb-form" class="ri" style="transition-delay:.15s">
+      <div class="glass-card" style="padding:2rem;">
+        <textarea id="fb-text" class="neon-textarea" rows="8" maxlength="500" placeholder="Escribe aquí tu feedback... puede ser un bug, una queja, un elogio, o simplemente tu experiencia jugando WreckZone."></textarea>
+        <p class="char-counter"><span id="fb-count">0</span> / 500</p>
+      </div>
+      <div style="margin-top:1.8rem;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="submitFeedback()"><span>Enviar Feedback</span></button>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.22);letter-spacing:.15em;">Anónimo · No se guardan datos personales</span>
+      </div>
+    </div>
+    <div class="success-state" id="fb-success">
+      <div class="success-icon"><svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="none" stroke="#00FFFF" stroke-width="2"/><polyline points="20,36 30,46 52,24" fill="none" stroke="#00FFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <p class="success-title">¡Feedback Recibido!</p>
+      <p class="success-sub">Gracias. Cada mensaje cuenta en el desarrollo de WreckZone.</p>
+      <button class="btn-ghost" onclick="navigate('page-hub','back')">Volver al Hub</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-sugerencias">
+  <div class="form-page">
+    <div class="form-title-row ri">
+      <p class="section-label">// SUGERENCIAS //</p>
+      <h2 class="section-title">Tus <em>Ideas</em></h2>
+      <div class="divider"></div>
+      <p class="form-intro">Responde solo las preguntas que apliquen para ti. Si tienes algo que decir, el espacio es tuyo.</p>
+    </div>
+    <div class="progress-bar-wrap ri" style="transition-delay:.1s">
+      <div class="progress-bar-fill" id="sug-progress" style="width:0%"></div>
+    </div>
+    <div id="sug-form" class="ri" style="transition-delay:.15s">
+      <div class="question-block glass-card" style="margin-bottom:1.2rem;" id="q1">
+        <p class="question-text">01 — ¿Tienes alguna idea sobre una implementación en el juego?</p>
+        <div class="yn-row">
+          <button class="yn-btn" onclick="toggleQ('q1','yes')">Sí</button>
+          <button class="yn-btn" onclick="toggleQ('q1','no')">No</button>
+        </div>
+        <div class="answer-area" id="q1-area">
+          <textarea class="neon-textarea" rows="4" placeholder="Cuéntanos tu idea de implementación..." oninput="updateProgress()"></textarea>
+        </div>
+      </div>
+      <div class="question-block glass-card" style="margin-bottom:1.2rem;" id="q2">
+        <p class="question-text">02 — ¿Tienes sugerencias de algún modo de juego?</p>
+        <div class="yn-row">
+          <button class="yn-btn" onclick="toggleQ('q2','yes')">Sí</button>
+          <button class="yn-btn" onclick="toggleQ('q2','no')">No</button>
+        </div>
+        <div class="answer-area" id="q2-area">
+          <textarea class="neon-textarea" rows="4" placeholder="Describe el modo de juego que te imaginas..." oninput="updateProgress()"></textarea>
+        </div>
+      </div>
+      <div class="question-block glass-card" style="margin-bottom:1.2rem;" id="q3">
+        <p class="question-text">03 — ¿Tienes ideas para algún diseño de mapa?</p>
+        <div class="yn-row">
+          <button class="yn-btn" onclick="toggleQ('q3','yes')">Sí</button>
+          <button class="yn-btn" onclick="toggleQ('q3','no')">No</button>
+        </div>
+        <div class="answer-area" id="q3-area">
+          <textarea class="neon-textarea" rows="4" placeholder="Describe la temática, el ambiente, la estructura del mapa..." oninput="updateProgress()"></textarea>
+        </div>
+      </div>
+      <div class="question-block glass-card" style="margin-bottom:1.2rem;" id="q4">
+        <p class="question-text">04 — ¿Tienes alguna sugerencia en general para el futuro del juego?</p>
+        <div class="yn-row">
+          <button class="yn-btn" onclick="toggleQ('q4','yes')">Sí</button>
+          <button class="yn-btn" onclick="toggleQ('q4','no')">No</button>
+        </div>
+        <div class="answer-area" id="q4-area">
+          <textarea class="neon-textarea" rows="4" placeholder="Cualquier cosa que quieras compartir sobre el futuro de WreckZone..." oninput="updateProgress()"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:1.8rem;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="submitSugerencias()"><span>Enviar Sugerencias</span></button>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.22);letter-spacing:.15em;">Puedes responder una o todas</span>
+      </div>
+    </div>
+    <div class="success-state" id="sug-success">
+      <div class="success-icon"><svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="none" stroke="#FF00FF" stroke-width="2" filter="drop-shadow(0 0 12px #FF00FF)"/><polyline points="20,36 30,46 52,24" fill="none" stroke="#FF00FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <p class="success-title" style="text-shadow:0 0 20px var(--m);">¡Ideas Recibidas!</p>
+      <p class="success-sub">Tu visión puede darle forma al juego. Gracias de verdad.</p>
+      <button class="btn-ghost" onclick="navigate('page-hub','back')">Volver al Hub</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-votacion">
+  <div class="soon-page">
+    <p class="soon-label ri">// PRÓXIMAMENTE //</p>
+    <p class="soon-title ri" style="transition-delay:.1s">VOTACIÓN</p>
+    <div class="divider ri" style="margin:0 auto;transition-delay:.18s;"></div>
+    <p class="soon-desc ri" style="transition-delay:.22s">El sistema de votación estará disponible próximamente. Cada jugador vinculado tendrá <strong style="color:var(--y)">2 votos</strong> por temporada para decidir el próximo contenido de WreckZone.</p>
+    <div class="connect-btns ri" style="transition-delay:.3s">
+      <div class="connect-btn">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" fill="#5865F2" opacity=".8"/><path d="M7 8.5 Q11 7 15 8.5 Q16 12 15 14.5 Q13 15.5 11 15.5 Q9 15.5 7 14.5 Q6 12 7 8.5Z" fill="white" opacity=".9"/></svg>
+        Vincular Discord — Próximamente
+      </div>
+      <div class="connect-btn">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/><text x="5.5" y="15" font-size="10" fill="white" opacity=".7" font-family="sans-serif">G</text></svg>
+        Vincular Gmail — Próximamente
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-postulaciones">
+  <div class="form-page" style="max-width:780px;">
+    <div class="form-title-row ri">
+      <p class="section-label">// ÚNETE AL EQUIPO //</p>
+      <h2 class="section-title"><em>Postula</em> al Proyecto</h2>
+      <div class="divider"></div>
+      <p class="form-intro">WreckZone es un proyecto independiente que busca personas con ganas de aprender haciendo. No necesitas ser un experto — necesitas pasión y algo concreto que mostrar.</p>
+    </div>
+    <div id="post-form">
+      <div class="form-section ri" style="transition-delay:.1s">
+        <p class="form-section-title">01 · ¿Qué sabes hacer?</p>
+        <p style="font-family:'Share Tech Mono',monospace;font-size:.76rem;color:rgba(255,255,255,.32);margin-bottom:.8rem;letter-spacing:.08em;">Selecciona todo lo que aplique. Puedes elegir varios.</p>
+        <div class="chips-grid" id="skills-grid">
+          <button class="chip" onclick="toggleChip(this)">Scripting / Luau</button>
+          <button class="chip" onclick="toggleChip(this)">Building / Construcción</button>
+          <button class="chip" onclick="toggleChip(this)">Modelado 3D</button>
+          <button class="chip" onclick="toggleChip(this)">UI / Interfaces</button>
+          <button class="chip" onclick="toggleChip(this)">Animación</button>
+          <button class="chip" onclick="toggleChip(this)">Audio / Sound Design</button>
+          <button class="chip" onclick="toggleChip(this)">Game Design</button>
+          <button class="chip" onclick="toggleChip(this)">Arte / Texturas</button>
+          <button class="chip" onclick="toggleChip(this)">VFX / Efectos visuales</button>
+          <button class="chip" onclick="toggleChip(this)">Otro</button>
+        </div>
+      </div>
+      <div class="form-section ri glass-card" style="transition-delay:.18s">
+        <p class="form-section-title">02 · Cuéntanos más</p>
+        <div class="input-row">
+          <div class="input-group">
+            <label class="input-label">Usuario de Roblox <span class="req">*</span></label>
+            <input id="post-roblox" class="neon-input" type="text" placeholder="TuUsername123" autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Usuario de Discord</label>
+            <input id="post-discord" class="neon-input" type="text" placeholder="usuario#0000 o @usuario" autocomplete="off">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">¿Qué querrías aportar al proyecto? <span class="req">*</span></label>
+          <textarea id="post-contrib" class="neon-textarea" rows="5" maxlength="800" placeholder="Describe con detalle qué harías, qué ideas tienes, cómo te ves aportando a WreckZone. Sé específico."></textarea>
+          <p class="char-counter"><span id="post-contrib-count">0</span> / 800</p>
+        </div>
+      </div>
+      <div class="form-section ri glass-card" style="transition-delay:.26s">
+        <p class="form-section-title">03 · Muestra tu trabajo <span style="color:var(--m);font-size:.63rem;">OBLIGATORIO</span></p>
+        <p style="font-family:'Share Tech Mono',monospace;font-size:.73rem;color:rgba(255,255,255,.28);margin-bottom:1rem;line-height:1.65;">Sube capturas, videos, archivos de Roblox Studio o un enlace a tu trabajo. Cualquier evidencia concreta es válida.</p>
+        <div class="port-toggle">
+          <button class="port-tab active" id="tab-upload" onclick="switchPortTab('upload')">Subir archivo</button>
+          <button class="port-tab" id="tab-url" onclick="switchPortTab('url')">Añadir enlace</button>
+        </div>
+        <div id="port-upload-section">
+          <div class="dropzone" id="post-dropzone">
+            <input type="file" id="post-file" accept="image/*,video/*,.pdf,.zip,.rbxm,.rbxl,.rbxlx" onchange="handleFile(this)">
+            <div class="dropzone-icon"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="6" y="10" width="28" height="22" rx="3" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/><path d="M14 16 L20 10 L26 16" fill="none" stroke="#00FFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/><line x1="20" y1="10" x2="20" y2="24" stroke="#00FFFF" stroke-width="1.8" stroke-linecap="round" opacity=".7"/></svg></div>
+            <p class="dropzone-title">Arrastra o haz clic para subir</p>
+            <p class="dropzone-sub">Imágenes, video, PDF, ZIP, .rbxm, .rbxl<br><span>Máximo 10 MB</span></p>
+          </div>
+          <div class="file-preview" id="post-file-preview">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="2" fill="none" stroke="#00FFFF" stroke-width="1.5"/><line x1="6" y1="7" x2="14" y2="7" stroke="#00FFFF" stroke-width="1" opacity=".5"/><line x1="6" y1="10" x2="12" y2="10" stroke="#00FFFF" stroke-width="1" opacity=".35"/></svg>
+            <span class="file-preview-name" id="post-file-name">—</span>
+            <span class="file-preview-size" id="post-file-size"></span>
+            <button class="file-remove" onclick="removeFile()" title="Quitar archivo">✕</button>
+          </div>
+          <p id="post-file-error" style="font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--m);margin-top:.5rem;display:none;">El archivo supera los 10 MB. Elige uno más pequeño o usa un enlace.</p>
+        </div>
+        <div id="port-url-section" style="display:none;">
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label">Enlace a tu trabajo <span class="req">*</span></label>
+            <input id="post-url" class="neon-input" type="url" placeholder="https://youtube.com/... · roblox.com/games/... · github.com/...">
+          </div>
+        </div>
+      </div>
+      <div class="ri" style="margin-top:1.8rem;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;transition-delay:.32s;">
+        <button class="btn-primary" onclick="submitPost()"><span>Enviar Postulación</span></button>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:.68rem;color:rgba(255,255,255,.18);letter-spacing:.1em;">Los campos con <span style="color:var(--m)">*</span> son obligatorios</span>
+      </div>
+    </div>
+    <div class="success-state" id="post-success">
+      <div class="success-icon"><svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="none" stroke="#FF00FF" stroke-width="2" filter="drop-shadow(0 0 14px #FF00FF)"/><polyline points="20,36 30,46 52,24" fill="none" stroke="#FF00FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <p class="success-title" style="text-shadow:0 0 20px var(--m);">¡Postulación Enviada!</p>
+      <p class="success-sub">Revisaremos tu perfil con calma. Si hay fit, te contactamos por Discord.</p>
+      <button class="btn-ghost" onclick="navigate('page-hub','back')">Volver al Hub</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-tester">
+  <div class="tester-page">
+    <div class="form-title-row ri">
+      <p class="section-label" style="color:#9D4DFF;">// TESTER PROGRAM //</p>
+      <h2 class="section-title" style="text-shadow:0 0 10px #fff,0 0 30px #9D4DFF,0 0 60px rgba(157,77,255,.4);">Sé un <em style="color:#c084fc;text-shadow:0 0 10px #9D4DFF,0 0 30px #9D4DFF;">Tester</em></h2>
+      <div class="divider" style="background:linear-gradient(to right,transparent,#9D4DFF,var(--m),transparent);box-shadow:0 0 10px #9D4DFF;"></div>
+      <p class="form-intro">Prueba WreckZone antes que nadie. Tu trabajo es encontrar lo que falla, decir lo que se siente y ayudar a pulir la experiencia antes de cada lanzamiento.</p>
+    </div>
+    <div class="glass-card ri" style="margin-bottom:1.8rem;transition-delay:.1s;">
+      <div class="tester-perk">
+        <div class="tester-perk-dot" style="background:var(--c);box-shadow:0 0 8px var(--c);"></div>
+        <p class="tester-perk-text"><strong>Acceso anticipado</strong> — Prueba nuevos modos, mapas y mecánicas antes del lanzamiento público.</p>
+      </div>
+      <div class="tester-perk">
+        <div class="tester-perk-dot" style="background:#9D4DFF;box-shadow:0 0 8px #9D4DFF;"></div>
+        <p class="tester-perk-text"><strong>Rol exclusivo en Discord</strong> — Los testers tendrán un canal y rol especial dentro del servidor oficial.</p>
+      </div>
+      <div class="tester-perk">
+        <div class="tester-perk-dot" style="background:var(--m);box-shadow:0 0 8px var(--m);"></div>
+        <p class="tester-perk-text"><strong>Tu feedback impacta directo</strong> — Lo que reportes se lee, se considera y puede cambiar el juego literalmente.</p>
+      </div>
+    </div>
+    <div id="tester-form">
+      <div class="glass-card ri" style="transition-delay:.18s;">
+        <div class="discord-badge ri" style="transition-delay:.22s;">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M18.59 1.37A18.1 18.1 0 0014.2.04a.07.07 0 00-.07.03c-.18.33-.39.76-.53 1.1a16.7 16.7 0 00-5.19 0A11.3 11.3 0 007.87.07a.07.07 0 00-.07-.03A18.1 18.1 0 003.41 1.37a.06.06 0 00-.03.03C.5 5.75-.3 10 .09 14.2a.07.07 0 00.03.05 18.2 18.2 0 005.49 2.8.07.07 0 00.08-.03c.42-.58.8-1.2 1.12-1.85a.07.07 0 00-.04-.1 12 12 0 01-1.72-.83.07.07 0 010-.12l.34-.27a.07.07 0 01.07-.01c3.61 1.66 7.52 1.66 11.09 0a.07.07 0 01.07.01l.34.27a.07.07 0 010 .12 11.3 11.3 0 01-1.72.82.07.07 0 00-.04.1c.33.65.71 1.27 1.12 1.86a.07.07 0 00.08.03 18.2 18.2 0 005.5-2.8.07.07 0 00.02-.05c.46-4.87-.77-9.09-3.28-12.83a.06.06 0 00-.03-.03z" fill="#7289da"/></svg>
+          Se requerirá cuenta de Discord para registrar tu plaza
+        </div>
+        <div class="input-group">
+          <label class="input-label">Usuario de Roblox <span class="req">*</span></label>
+          <input id="tester-roblox" class="neon-input" type="text" placeholder="TuUsername123" autocomplete="off">
+        </div>
+        <div class="input-group" style="margin-bottom:0;">
+          <label class="input-label">Usuario de Discord</label>
+          <input id="tester-discord" class="neon-input" type="text" placeholder="usuario o @usuario (para confirmarte el rol)">
+        </div>
+      </div>
+      <div style="margin-top:1.8rem;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;" class="ri">
+        <button class="btn-primary" style="background:linear-gradient(135deg,#9D4DFF,var(--m));box-shadow:0 0 20px rgba(157,77,255,.6),0 0 40px rgba(157,77,255,.3);" onclick="submitTester()"><span>Registrarme como Tester</span></button>
+      </div>
+      <p class="ri" style="font-family:'Share Tech Mono',monospace;font-size:.68rem;color:rgba(255,255,255,.18);letter-spacing:.12em;margin-top:1rem;transition-delay:.3s;">Un registro por persona · La verificación de Discord vendrá en la próxima fase</p>
+    </div>
+    <div class="success-state" id="tester-success">
+      <div class="success-icon"><svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="none" stroke="#9D4DFF" stroke-width="2" filter="drop-shadow(0 0 14px #9D4DFF)"/><polyline points="20,36 30,46 52,24" fill="none" stroke="#9D4DFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <p class="success-title" style="text-shadow:0 0 20px #9D4DFF;">¡Registro Enviado!</p>
+      <p class="success-sub">Estás en la lista. Cuando abramos el acceso de testers, te contactamos vía Discord.</p>
+      <button class="btn-ghost" onclick="navigate('page-hub','back')">Volver al Hub</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  var SUPABASE_URL = 'https://ifzxejhttrnkgdawyigx.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlmenhlamh0dHJua2dkYXd5aWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NTczMTUsImV4cCI6MjA5MzQzMzMxNX0.Eie8Akgw06JWpo8G18P04jJonxH7AQFEA__Nb10vD-M';
+  var sb = null;
+  try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
+
+  var currentUser = null;
+
+  async function initAuth() {
+    if (!sb) return;
+    var sessionRes = await sb.auth.getSession();
+    var session = sessionRes.data.session;
+    if (session) {
+      currentUser = session.user;
+      renderUserBadge(currentUser);
+    }
+    sb.auth.onAuthStateChange(function(event, session) {
+      currentUser = session ? session.user : null;
+      renderUserBadge(currentUser);
+    });
+  }
+
+  function renderUserBadge(user) {
+    var badge = document.getElementById('user-badge');
+    var loginBtn = document.getElementById('discord-login-btn');
+    var heroHint = document.getElementById('hero-user-hint');
+    var heroName = document.getElementById('hero-user-name');
+    if (!badge || !loginBtn) return;
+    if (user) {
+      var meta = user.user_metadata || {};
+      var avatar = meta.avatar_url || '';
+      var name = meta.full_name || meta.name || meta.user_name || meta.preferred_username || 'Usuario';
+      badge.innerHTML =
+        (avatar ? '<img src="' + avatar + '" style="width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(157,77,255,.5);" />' : '') +
+        '<span style="font-size:.68rem;letter-spacing:.12em;color:rgba(255,255,255,.7);">' + name + '</span>' +
+        '<button onclick="logoutUser()" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.68rem;cursor:pointer;font-family:\'Share Tech Mono\',monospace;letter-spacing:.1em;padding:0 0 0 .3rem;">salir</button>';
+      badge.style.display = 'flex';
+      loginBtn.style.display = 'none';
+      if (heroHint) { heroHint.style.display = 'block'; heroHint.classList.add('vis'); }
+      if (heroName) heroName.textContent = name;
+    } else {
+      badge.style.display = 'none';
+      loginBtn.style.display = 'flex';
+      if (heroHint) { heroHint.style.display = 'none'; }
+    }
+  }
+
+  async function loginDiscord() {
+    if (!sb) { alert('Supabase no configurado aún.'); return; }
+    await sb.auth.signInWithOAuth({
+      provider: 'discord',
+      options: { redirectTo: window.location.href }
+    });
+  }
+
+  async function logoutUser() {
+    if (!sb) return;
+    await sb.auth.signOut();
+  }
+
+  async function sbInsert(table, payload) {
+    if (!sb) return { error: { message: 'Supabase no configurado' } };
+    return await sb.from(table).insert(payload);
+  }
+
+  initAuth();
+
+  var history_stack = ['page-hero'];
+  var nav_titles = {
+    'page-hero':'INICIO','page-info':'EL JUEGO',
+    'page-hub':'HUB','page-feedback':'FEEDBACK',
+    'page-sugerencias':'SUGERENCIAS',
+    'page-votacion':'VOTACIÓN','page-postulaciones':'POSTULACIONES',
+    'page-tester':'SÉ UN TESTER'
+  };
+
+  var overlayMap = {
+    'page-hero':'hero',
+    'page-hub':'hub',
+    'page-info':'deep','page-feedback':'deep',
+    'page-sugerencias':'deep','page-votacion':'deep',
+    'page-postulaciones':'deep','page-tester':'deep'
+  };
+
+  function setOverlay(pageId) {
+    var ov = document.getElementById('bg-overlay');
+    var cls = overlayMap[pageId] || 'deep';
+    ov.className = 'bg-overlay ' + cls;
+  }
+
+  function navigate(toId, dir) {
+    var direction = dir || 'forward';
+    var current = document.querySelector('.page.active');
+    var next = document.getElementById(toId);
+    if (!next || next === current) return;
+
+    next.classList.remove('from-left');
+    if (direction === 'forward') {
+      next.style.transform = 'translateX(70px) scale(.98)';
+    } else {
+      next.classList.add('from-left');
+      next.style.transform = '';
+    }
+    next.style.opacity = '0';
+    next.style.pointerEvents = 'none';
+
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        if (current) {
+          current.classList.remove('active');
+          if (direction === 'forward') {
+            current.style.transform = 'translateX(-50px) scale(.97)';
+            current.style.opacity = '0';
+          } else {
+            current.style.transform = 'translateX(70px) scale(.98)';
+            current.style.opacity = '0';
+          }
+          current.style.pointerEvents = 'none';
+          setTimeout(function() {
+            current.style.transform = '';
+            current.style.opacity = '';
+            current.classList.remove('from-left');
+          }, 500);
+        }
+        next.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1), opacity .45s ease';
+        next.style.transform = 'translateX(0) scale(1)';
+        next.style.opacity = '1';
+        next.style.pointerEvents = 'all';
+        next.classList.add('active');
+        next.classList.remove('from-left');
+        next.scrollTop = 0;
+        staggerReveal(next);
+        updateNav(toId);
+        setOverlay(toId);
+        var decoMap = {
+          'page-hero':'deco-hero','page-info':'deco-info','page-hub':'deco-hub',
+          'page-feedback':'deco-feedback','page-sugerencias':'deco-sugerencias',
+          'page-postulaciones':'deco-post','page-tester':'deco-tester','page-votacion':'deco-vote'
+        };
+        document.querySelectorAll('.deco-scene').forEach(function(d){
+          d.classList.toggle('active', d.id === decoMap[toId]);
+        });
+        if (direction === 'forward') {
+          history_stack.push(toId);
+        } else {
+          if (history_stack.length > 1) history_stack.pop();
+        }
+      });
+    });
+  }
+
+  function updateNav(pageId) {
+    var nav = document.getElementById('top-nav');
+    var title = document.getElementById('nav-title');
+    if (pageId === 'page-hero') {
+      nav.classList.remove('visible');
+    } else {
+      nav.classList.add('visible');
+      title.textContent = nav_titles[pageId] || '';
+    }
+  }
+
+  document.getElementById('nav-back-btn').addEventListener('click', function() {
+    if (history_stack.length >= 2) {
+      navigate(history_stack[history_stack.length - 2], 'back');
+    } else {
+      navigate('page-hero', 'back');
+    }
+  });
+
+  function staggerReveal(page) {
+    var items = page.querySelectorAll('.ri');
+    items.forEach(function(el) { el.classList.remove('vis'); });
+    items.forEach(function(el) {
+      var delay = parseFloat(el.style.transitionDelay || '0') * 1000 + 60;
+      setTimeout(function() { el.classList.add('vis'); }, delay);
+    });
+  }
+  staggerReveal(document.getElementById('page-hero'));
+
+  var fbText = document.getElementById('fb-text');
+  var fbCount = document.getElementById('fb-count');
+  fbText.addEventListener('input', function() {
+    var len = fbText.value.length;
+    fbCount.textContent = len;
+    var el = fbCount.parentElement;
+    el.classList.toggle('warn', len > 400 && len <= 480);
+    el.classList.toggle('over', len > 480);
+  });
+
+  async function submitFeedback() {
+    var txt = document.getElementById('fb-text').value.trim();
+    if (!txt) { flashBorder('fb-text'); return; }
+    var meta = currentUser ? (currentUser.user_metadata || {}) : {};
+    var res = await sbInsert('feedback', {
+      texto: txt,
+      discord_user_id: currentUser ? currentUser.id : null,
+      discord_username: currentUser ? (meta.full_name || meta.user_name || null) : null
+    });
+    if (res && res.error) { console.warn('Supabase:', res.error.message); }
+    document.getElementById('fb-form').style.display = 'none';
+    document.getElementById('fb-success').classList.add('show');
+  }
+
+  var qState = { q1: null, q2: null, q3: null, q4: null };
+
+  function toggleQ(id, val) {
+    qState[id] = val;
+    var block = document.getElementById(id);
+    var area = document.getElementById(id + '-area');
+    var btns = block.querySelectorAll('.yn-btn');
+    btns[0].classList.toggle('selected-yes', val === 'yes');
+    btns[0].classList.toggle('selected-no', val !== 'yes');
+    btns[1].classList.toggle('selected-no', val === 'no');
+    btns[1].classList.toggle('selected-yes', false);
+    area.classList.toggle('open', val === 'yes');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    var answered = Object.values(qState).filter(function(v) { return v !== null; }).length;
+    document.getElementById('sug-progress').style.width = (answered / 4 * 100) + '%';
+  }
+
+  async function submitSugerencias() {
+    var hasAny = Object.values(qState).some(function(v) { return v !== null; });
+    if (!hasAny) { flashSection('sug-form'); return; }
+    var meta = currentUser ? (currentUser.user_metadata || {}) : {};
+    var payload = {
+      discord_user_id: currentUser ? currentUser.id : null,
+      discord_username: currentUser ? (meta.full_name || meta.user_name || null) : null
+    };
+    ['q1','q2','q3','q4'].forEach(function(q) {
+      var ta = document.querySelector('#' + q + '-area textarea');
+      payload[q] = (ta && ta.value.trim()) ? ta.value.trim() : null;
+    });
+    var res = await sbInsert('sugerencias', payload);
+    if (res && res.error) { console.warn('Supabase:', res.error.message); }
+    document.getElementById('sug-form').style.display = 'none';
+    document.getElementById('sug-success').classList.add('show');
+  }
+
+  function flashBorder(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.style.borderColor = '#FF00FF';
+    el.style.boxShadow = '0 0 16px rgba(255,0,255,.5)';
+    setTimeout(function() { el.style.borderColor = ''; el.style.boxShadow = ''; }, 800);
+  }
+
+  function flashSection(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.style.transition = 'opacity .1s';
+    el.style.opacity = '.5';
+    setTimeout(function() { el.style.opacity = '1'; }, 150);
+    setTimeout(function() { el.style.opacity = '.5'; }, 300);
+    setTimeout(function() { el.style.opacity = '1'; el.style.transition = ''; }, 450);
+  }
+
+  function toggleChip(el) { el.classList.toggle('sel'); }
+
+  var postContrib = document.getElementById('post-contrib');
+  var postContribCount = document.getElementById('post-contrib-count');
+  postContrib.addEventListener('input', function() {
+    var len = postContrib.value.length;
+    postContribCount.textContent = len;
+    var el = postContribCount.parentElement;
+    el.classList.toggle('warn', len > 640 && len <= 770);
+    el.classList.toggle('over', len > 770);
+  });
+
+  function switchPortTab(tab) {
+    document.getElementById('tab-upload').classList.toggle('active', tab === 'upload');
+    document.getElementById('tab-url').classList.toggle('active', tab === 'url');
+    document.getElementById('port-upload-section').style.display = tab === 'upload' ? '' : 'none';
+    document.getElementById('port-url-section').style.display = tab === 'url' ? '' : 'none';
+  }
+
+  function handleFile(input) {
+    var file = input.files[0];
+    if (!file) return;
+    var err = document.getElementById('post-file-error');
+    if (file.size > 10 * 1024 * 1024) {
+      err.style.display = 'block';
+      input.value = '';
+      document.getElementById('post-file-preview').classList.remove('show');
+      return;
+    }
+    err.style.display = 'none';
+    document.getElementById('post-file-name').textContent = file.name;
+    document.getElementById('post-file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+    document.getElementById('post-file-preview').classList.add('show');
+  }
+
+  function removeFile() {
+    document.getElementById('post-file').value = '';
+    document.getElementById('post-file-preview').classList.remove('show');
+  }
+
+  var dz = document.getElementById('post-dropzone');
+  if (dz) {
+    dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
+    dz.addEventListener('drop', function(e) {
+      e.preventDefault(); dz.classList.remove('dragover');
+      var fi = document.getElementById('post-file');
+      fi.files = e.dataTransfer.files;
+      handleFile(fi);
+    });
+  }
+
+  async function submitPost() {
+    var roblox = document.getElementById('post-roblox').value.trim();
+    var contrib = document.getElementById('post-contrib').value.trim();
+    var isUpload = document.getElementById('tab-upload').classList.contains('active');
+    var hasFile = document.getElementById('post-file').files.length > 0;
+    var portUrl = document.getElementById('post-url') ? document.getElementById('post-url').value.trim() : '';
+    var hasPort = isUpload ? hasFile : portUrl.length > 0;
+    if (!roblox) { flashBorder('post-roblox'); return; }
+    if (!contrib) { flashBorder('post-contrib'); return; }
+    if (!hasPort) { flashBorder(isUpload ? 'post-dropzone' : 'post-url'); return; }
+    var skills = Array.from(document.querySelectorAll('#skills-grid .chip.sel')).map(function(c){return c.textContent.trim();});
+    var meta = currentUser ? (currentUser.user_metadata || {}) : {};
+    var res = await sbInsert('postulaciones', {
+      roblox_username: roblox,
+      discord_username: document.getElementById('post-discord').value.trim() || (currentUser ? (meta.full_name || meta.user_name || null) : null),
+      habilidades: skills,
+      contribucion: contrib,
+      portfolio_url: isUpload ? null : (portUrl || null),
+      discord_user_id: currentUser ? currentUser.id : null
+    });
+    if (res && res.error) { console.warn('Supabase:', res.error.message); }
+    document.getElementById('post-form').style.display = 'none';
+    document.getElementById('post-success').classList.add('show');
+  }
+
+  async function submitTester() {
+    var roblox = document.getElementById('tester-roblox').value.trim();
+    if (!roblox) { flashBorder('tester-roblox'); return; }
+    var meta = currentUser ? (currentUser.user_metadata || {}) : {};
+    var res = await sbInsert('testers', {
+      roblox_username: roblox,
+      discord_username: document.getElementById('tester-discord').value.trim() || (currentUser ? (meta.full_name || meta.user_name || null) : null),
+      discord_user_id: currentUser ? currentUser.id : null
+    });
+    if (res && res.error) { console.warn('Supabase:', res.error.message); }
+    document.getElementById('tester-form').style.display = 'none';
+    document.getElementById('tester-success').classList.add('show');
+  }
+</script>
+</body>
+</html>
