@@ -299,6 +299,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   <span>WRECKZONE <span class="accent">©</span> 2026</span>
   <span>ROBLOX EXPERIENCE</span>
   <span><span class="accent">SYS</span> · ONLINE</span>
+  <a id="admin-footer-link" href="/admin.html" style="display:none;color:rgba(255,0,255,.35);text-decoration:none;letter-spacing:.18em;font-size:.58rem;transition:color .2s;" onmouseover="this.style.color='var(--m)'" onmouseout="this.style.color='rgba(255,0,255,.35)'">ADMIN</a>
 </div>
 
 <div class="page active" id="page-hero">
@@ -673,12 +674,27 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 <script>
   var SUPABASE_URL = 'https://ifzxejhttrnkgdawyigx.supabase.co';
   var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlmenhlamh0dHJua2dkYXd5aWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NTczMTUsImV4cCI6MjA5MzQzMzMxNX0.Eie8Akgw06JWpo8G18P04jJonxH7AQFEA__Nb10vD-M';
+
+  // Owner usernames — these bypass duplicate submission limits
+  var OWNER_USERNAMES = ['.breadd_', 'breadd', 'josue', 'josuebb'];
+
   var sb = null;
   try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
 
   var currentUser = null;
 
-  // ── AUTH ────────────────────────────────────────────────────────────────────
+  // ── OWNER DETECTION ─────────────────────────────────────────────────────────
+
+  function isOwner(user) {
+    if (!user) return false;
+    var meta = user.user_metadata || {};
+    var name = ((meta.custom_claims && meta.custom_claims.global_name) ||
+                meta.full_name || meta.name || meta.user_name ||
+                meta.preferred_username || '').toLowerCase().replace(/\s+/g,'');
+    return OWNER_USERNAMES.some(function(u){ return name.includes(u.toLowerCase()); });
+  }
+
+  // ── AUTH ─────────────────────────────────────────────────────────────────────
 
   async function initAuth() {
     if (!sb) return;
@@ -694,68 +710,73 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     });
   }
 
+  function getUserDisplayName(user) {
+    if (!user) return null;
+    var meta = user.user_metadata || {};
+    return (meta.custom_claims && meta.custom_claims.global_name) ||
+           meta.full_name || meta.name || meta.user_name ||
+           meta.preferred_username || 'Usuario';
+  }
+
   function renderUserBadge(user) {
-    var badge      = document.getElementById('user-badge');
-    var loginBtn   = document.getElementById('discord-login-btn');
-    var heroHint   = document.getElementById('hero-user-hint');
-    var heroName   = document.getElementById('hero-user-name');
-    var hubBanner  = document.getElementById('hub-login-banner');
-    var testerInfo = document.getElementById('tester-user-info');
+    var badge        = document.getElementById('user-badge');
+    var loginBtn     = document.getElementById('discord-login-btn');
+    var heroHint     = document.getElementById('hero-user-hint');
+    var heroName     = document.getElementById('hero-user-name');
+    var hubBanner    = document.getElementById('hub-login-banner');
+    var testerInfo   = document.getElementById('tester-user-info');
     var testerPrompt = document.getElementById('tester-discord-prompt');
+    var adminLink    = document.getElementById('admin-footer-link');
     if (!badge || !loginBtn) return;
 
     if (user) {
       var meta   = user.user_metadata || {};
       var avatar = meta.avatar_url || '';
-      var name   = meta.full_name || meta.name || meta.user_name || meta.preferred_username || 'Usuario';
-      var globalName = (meta.custom_claims && meta.custom_claims.global_name) || name;
+      var name   = getUserDisplayName(user);
+      var owner  = isOwner(user);
 
       // Nav badge
       badge.innerHTML =
         (avatar ? '<img src="' + avatar + '" style="width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(157,77,255,.5);" />' : '') +
-        '<span style="font-size:.68rem;letter-spacing:.12em;color:rgba(255,255,255,.7);">' + globalName + '</span>' +
+        '<span style="font-size:.68rem;letter-spacing:.12em;color:rgba(255,255,255,.7);">' + escName(name) + '</span>' +
         '<button onclick="logoutUser()" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.68rem;cursor:pointer;font-family:\'Share Tech Mono\',monospace;letter-spacing:.1em;padding:0 0 0 .3rem;">salir</button>';
       badge.style.display = 'flex';
       loginBtn.style.display = 'none';
 
-      // Hero hint
       if (heroHint) { heroHint.style.display = 'block'; heroHint.classList.add('vis'); }
-      if (heroName) heroName.textContent = globalName;
-
-      // Hub: hide login banner
+      if (heroName) heroName.textContent = name;
       if (hubBanner) hubBanner.style.display = 'none';
 
-      // Tester: show logged-in info, hide prompt
+      // Tester: show logged-in info
       if (testerInfo) {
-        var avatarHtml = avatar ? '<img src="' + avatar + '" />' : '';
-        document.getElementById('tester-user-name').textContent = 'Conectado como ' + globalName;
+        var testerNameEl = document.getElementById('tester-user-name');
+        if (testerNameEl) testerNameEl.textContent = 'Conectado como ' + name;
         testerInfo.style.display = 'flex';
       }
       if (testerPrompt) testerPrompt.style.display = 'none';
 
-      // Auto-fill Discord field in postulaciones
+      // Auto-fill Discord in postulaciones (readonly)
       var postDiscord = document.getElementById('post-discord');
-      if (postDiscord) {
-        postDiscord.value = globalName;
-        postDiscord.placeholder = globalName;
-      }
+      if (postDiscord) { postDiscord.value = name; postDiscord.placeholder = name; }
+
+      // Admin link — only visible to owner
+      if (adminLink) adminLink.style.display = owner ? 'inline' : 'none';
 
     } else {
       badge.style.display = 'none';
       loginBtn.style.display = 'flex';
       if (heroHint) heroHint.style.display = 'none';
-
-      // Hub: show login banner
       if (hubBanner) hubBanner.style.display = 'flex';
-
-      // Tester: hide info, show prompt
       if (testerInfo) testerInfo.style.display = 'none';
       if (testerPrompt) testerPrompt.style.display = 'flex';
-
-      // Reset discord field
       var postDiscord = document.getElementById('post-discord');
       if (postDiscord) { postDiscord.value = ''; postDiscord.placeholder = '— se obtiene de tu sesión —'; }
+      if (adminLink) adminLink.style.display = 'none';
     }
+  }
+
+  function escName(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
   async function loginDiscord() {
@@ -771,37 +792,43 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     await sb.auth.signOut();
   }
 
-  // ── SUPABASE HELPERS ────────────────────────────────────────────────────────
+  // ── SUPABASE HELPERS ─────────────────────────────────────────────────────────
 
   async function sbInsert(table, payload) {
     if (!sb) return { error: { message: 'Supabase no configurado' } };
     return await sb.from(table).insert(payload);
   }
 
-  // Returns true if the current user already has a row in the given table
+  // Returns true if the user has any row in the table (uses HEAD count, no data transfer)
   async function userAlreadySubmitted(table) {
     if (!sb || !currentUser) return false;
+    // Owners bypass all duplicate limits (for testing)
+    if (isOwner(currentUser)) return false;
     try {
-      var res = await sb.from(table).select('id').eq('discord_user_id', currentUser.id).maybeSingle();
-      return !!(res && res.data);
+      var res = await sb.from(table)
+        .select('*', { count: 'exact', head: true })
+        .eq('discord_user_id', currentUser.id);
+      return (res.count !== null && res.count > 0);
     } catch(e) { return false; }
   }
 
-  // Returns true if the current user already submitted today in the given table
+  // Returns true if the user already submitted today in the given table
   async function userSubmittedToday(table) {
     if (!sb || !currentUser) return false;
+    // Owners bypass daily limits too
+    if (isOwner(currentUser)) return false;
     try {
       var today = new Date().toISOString().split('T')[0];
-      var res = await sb.from(table).select('id')
+      var res = await sb.from(table)
+        .select('*', { count: 'exact', head: true })
         .eq('discord_user_id', currentUser.id)
         .gte('created_at', today + 'T00:00:00.000Z')
-        .lt('created_at', today + 'T23:59:59.999Z')
-        .maybeSingle();
-      return !!(res && res.data);
+        .lt('created_at', today + 'T23:59:59.999Z');
+      return (res.count !== null && res.count > 0);
     } catch(e) { return false; }
   }
 
-  // ── UI HELPERS ──────────────────────────────────────────────────────────────
+  // ── UI HELPERS ────────────────────────────────────────────────────────────────
 
   function showToast(msg) {
     var t = document.getElementById('wz-toast');
@@ -816,7 +843,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     showToast(msg || 'Conéctate con Discord para continuar');
     var btn = document.getElementById('discord-login-btn');
     if (btn) {
-      btn.style.transition = 'box-shadow .15s';
       btn.style.boxShadow = '0 0 0 2px #7289da, 0 0 20px rgba(114,137,218,.5)';
       setTimeout(function() { btn.style.boxShadow = ''; }, 1400);
     }
@@ -824,7 +850,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 
   initAuth();
 
-  // ── NAVIGATION ──────────────────────────────────────────────────────────────
+  // ── NAVIGATION ────────────────────────────────────────────────────────────────
 
   var history_stack = ['page-hero'];
   var nav_titles = {
@@ -834,10 +860,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     'page-votacion':'VOTACIÓN','page-postulaciones':'POSTULACIONES',
     'page-tester':'SÉ UN TESTER'
   };
-
   var overlayMap = {
-    'page-hero':'hero',
-    'page-hub':'hub',
+    'page-hero':'hero','page-hub':'hub',
     'page-info':'deep','page-feedback':'deep',
     'page-sugerencias':'deep','page-votacion':'deep',
     'page-postulaciones':'deep','page-tester':'deep'
@@ -845,8 +869,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 
   function setOverlay(pageId) {
     var ov = document.getElementById('bg-overlay');
-    var cls = overlayMap[pageId] || 'deep';
-    ov.className = 'bg-overlay ' + cls;
+    ov.className = 'bg-overlay ' + (overlayMap[pageId] || 'deep');
   }
 
   function navigate(toId, dir) {
@@ -922,11 +945,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   }
 
   document.getElementById('nav-back-btn').addEventListener('click', function() {
-    if (history_stack.length >= 2) {
-      navigate(history_stack[history_stack.length - 2], 'back');
-    } else {
-      navigate('page-hero', 'back');
-    }
+    navigate(history_stack.length >= 2 ? history_stack[history_stack.length - 2] : 'page-hero', 'back');
   });
 
   function staggerReveal(page) {
@@ -939,9 +958,9 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   }
   staggerReveal(document.getElementById('page-hero'));
 
-  // ── FEEDBACK (anónimo permitido, ilimitado) ─────────────────────────────────
+  // ── FEEDBACK (anónimo OK · ilimitado) ────────────────────────────────────────
 
-  var fbText = document.getElementById('fb-text');
+  var fbText  = document.getElementById('fb-text');
   var fbCount = document.getElementById('fb-count');
   fbText.addEventListener('input', function() {
     var len = fbText.value.length;
@@ -954,19 +973,18 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   async function submitFeedback() {
     var txt = document.getElementById('fb-text').value.trim();
     if (!txt) { flashBorder('fb-text'); return; }
-    var meta = currentUser ? (currentUser.user_metadata || {}) : {};
-    var globalName = currentUser ? ((meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || null) : null;
+    var name = getUserDisplayName(currentUser);
     var res = await sbInsert('feedback', {
       texto: txt,
-      discord_user_id: currentUser ? currentUser.id : null,
-      discord_username: globalName
+      discord_user_id:  currentUser ? currentUser.id : null,
+      discord_username: currentUser ? name : null
     });
     if (res && res.error) { console.warn('Supabase feedback:', res.error.message); }
     document.getElementById('fb-form').style.display = 'none';
     document.getElementById('fb-success').classList.add('show');
   }
 
-  // ── SUGERENCIAS (1 por día por usuario; localStorage para anónimos) ──────────
+  // ── SUGERENCIAS (1 por día · localStorage para anónimos) ─────────────────────
 
   var qState = { q1: null, q2: null, q3: null, q4: null };
 
@@ -984,37 +1002,31 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   }
 
   function updateProgress() {
-    var answered = Object.values(qState).filter(function(v) { return v !== null; }).length;
+    var answered = Object.values(qState).filter(function(v){ return v !== null; }).length;
     document.getElementById('sug-progress').style.width = (answered / 4 * 100) + '%';
   }
 
   async function submitSugerencias() {
-    var hasAny = Object.values(qState).some(function(v) { return v !== null; });
+    var hasAny = Object.values(qState).some(function(v){ return v !== null; });
     if (!hasAny) { flashSection('sug-form'); return; }
 
-    // Limit: 1 per day
     if (currentUser) {
-      var alreadyToday = await userSubmittedToday('sugerencias');
-      if (alreadyToday) {
+      if (await userSubmittedToday('sugerencias')) {
         showToast('Ya enviaste sugerencias hoy. Vuelve mañana 🕐');
         return;
       }
     } else {
-      var lastSug = localStorage.getItem('wz_sug_last');
-      if (lastSug) {
-        var lastDate = new Date(parseInt(lastSug)).toDateString();
-        if (lastDate === new Date().toDateString()) {
-          showToast('Ya enviaste sugerencias hoy. Vuelve mañana 🕐');
-          return;
-        }
+      var last = localStorage.getItem('wz_sug_last');
+      if (last && new Date(parseInt(last)).toDateString() === new Date().toDateString()) {
+        showToast('Ya enviaste sugerencias hoy. Vuelve mañana 🕐');
+        return;
       }
     }
 
-    var meta = currentUser ? (currentUser.user_metadata || {}) : {};
-    var globalName = currentUser ? ((meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || null) : null;
+    var name = getUserDisplayName(currentUser);
     var payload = {
-      discord_user_id: currentUser ? currentUser.id : null,
-      discord_username: globalName
+      discord_user_id:  currentUser ? currentUser.id : null,
+      discord_username: currentUser ? name : null
     };
     ['q1','q2','q3','q4'].forEach(function(q) {
       var ta = document.querySelector('#' + q + '-area textarea');
@@ -1023,21 +1035,20 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 
     var res = await sbInsert('sugerencias', payload);
     if (res && res.error) { console.warn('Supabase sugerencias:', res.error.message); return; }
-
     if (!currentUser) localStorage.setItem('wz_sug_last', Date.now().toString());
 
     document.getElementById('sug-form').style.display = 'none';
     document.getElementById('sug-success').classList.add('show');
   }
 
-  // ── UTILS (shared) ───────────────────────────────────────────────────────────
+  // ── UTILS ─────────────────────────────────────────────────────────────────────
 
   function flashBorder(id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.style.borderColor = '#FF00FF';
     el.style.boxShadow = '0 0 16px rgba(255,0,255,.5)';
-    setTimeout(function() { el.style.borderColor = ''; el.style.boxShadow = ''; }, 800);
+    setTimeout(function(){ el.style.borderColor = ''; el.style.boxShadow = ''; }, 800);
   }
 
   function flashSection(id) {
@@ -1045,14 +1056,14 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     if (!el) return;
     el.style.transition = 'opacity .1s';
     el.style.opacity = '.5';
-    setTimeout(function() { el.style.opacity = '1'; }, 150);
-    setTimeout(function() { el.style.opacity = '.5'; }, 300);
-    setTimeout(function() { el.style.opacity = '1'; el.style.transition = ''; }, 450);
+    setTimeout(function(){ el.style.opacity = '1'; }, 150);
+    setTimeout(function(){ el.style.opacity = '.5'; }, 300);
+    setTimeout(function(){ el.style.opacity = '1'; el.style.transition = ''; }, 450);
   }
 
   function toggleChip(el) { el.classList.toggle('sel'); }
 
-  // ── POSTULACIONES (requiere login · 1 por usuario) ──────────────────────────
+  // ── POSTULACIONES (requiere login · 1 por usuario) ────────────────────────────
 
   var postContrib      = document.getElementById('post-contrib');
   var postContribCount = document.getElementById('post-contrib-count');
@@ -1071,39 +1082,27 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     document.getElementById('port-url-section').style.display    = tab === 'url'    ? '' : 'none';
   }
 
-  // Allowed file types for portfolio upload
-  var ALLOWED_TYPES = [
-    'image/jpeg','image/png','image/gif','image/webp','image/avif',
-    'video/mp4','video/webm','video/quicktime',
-    'application/pdf',
-    'application/zip','application/x-zip-compressed',
-    'application/octet-stream' // .rbxm / .rbxl / .rbxlx
-  ];
   var ALLOWED_EXT = /\.(jpe?g|png|gif|webp|avif|mp4|webm|mov|pdf|zip|rbxm|rbxl|rbxlx)$/i;
 
   function handleFile(input) {
     var file = input.files[0];
-    if (!file) return;
     var err  = document.getElementById('post-file-error');
-
+    if (!file) return;
     if (!ALLOWED_EXT.test(file.name)) {
-      err.textContent = 'Tipo de archivo no permitido. Usa imagen, video, PDF, ZIP o archivos de Roblox (.rbxm, .rbxl).';
-      err.style.display = 'block';
-      input.value = '';
+      err.textContent = 'Tipo no permitido. Usa imagen, video, PDF, ZIP o archivos Roblox (.rbxm/.rbxl).';
+      err.style.display = 'block'; input.value = '';
       document.getElementById('post-file-preview').classList.remove('show');
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      err.textContent = 'El archivo supera los 10 MB. Elige uno más pequeño o usa un enlace.';
-      err.style.display = 'block';
-      input.value = '';
+      err.textContent = 'El archivo supera 10 MB. Elige uno más pequeño o usa un enlace.';
+      err.style.display = 'block'; input.value = '';
       document.getElementById('post-file-preview').classList.remove('show');
       return;
     }
-
     err.style.display = 'none';
     document.getElementById('post-file-name').textContent = file.name;
-    document.getElementById('post-file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+    document.getElementById('post-file-size').textContent = (file.size/1024/1024).toFixed(2) + ' MB';
     document.getElementById('post-file-preview').classList.add('show');
   }
 
@@ -1114,9 +1113,9 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 
   var dz = document.getElementById('post-dropzone');
   if (dz) {
-    dz.addEventListener('dragover',  function(e) { e.preventDefault(); dz.classList.add('dragover'); });
-    dz.addEventListener('dragleave', function()  { dz.classList.remove('dragover'); });
-    dz.addEventListener('drop', function(e) {
+    dz.addEventListener('dragover',  function(e){ e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', function(){ dz.classList.remove('dragover'); });
+    dz.addEventListener('drop', function(e){
       e.preventDefault(); dz.classList.remove('dragover');
       var fi = document.getElementById('post-file');
       fi.files = e.dataTransfer.files;
@@ -1125,14 +1124,9 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   }
 
   async function submitPost() {
-    if (!currentUser) {
-      requireLogin('Conecta Discord primero para postularte');
-      return;
-    }
+    if (!currentUser) { requireLogin('Conecta Discord primero para postularte'); return; }
 
-    // 1 submission per user
-    var alreadyApplied = await userAlreadySubmitted('postulaciones');
-    if (alreadyApplied) {
+    if (await userAlreadySubmitted('postulaciones')) {
       showToast('Ya enviaste una postulación. Te contactamos por Discord si hay fit.');
       return;
     }
@@ -1141,20 +1135,19 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     var contrib  = document.getElementById('post-contrib').value.trim();
     var isUpload = document.getElementById('tab-upload').classList.contains('active');
     var hasFile  = document.getElementById('post-file').files.length > 0;
-    var portUrl  = document.getElementById('post-url') ? document.getElementById('post-url').value.trim() : '';
+    var portUrl  = (document.getElementById('post-url') || {}).value && document.getElementById('post-url').value.trim() || '';
     var hasPort  = isUpload ? hasFile : portUrl.length > 0;
 
-    if (!roblox)   { flashBorder('post-roblox');  return; }
-    if (!contrib)  { flashBorder('post-contrib'); return; }
-    if (!hasPort)  { flashBorder(isUpload ? 'post-dropzone' : 'post-url'); return; }
+    if (!roblox)  { flashBorder('post-roblox');  return; }
+    if (!contrib) { flashBorder('post-contrib'); return; }
+    if (!hasPort) { flashBorder(isUpload ? 'post-dropzone' : 'post-url'); return; }
 
     var skills = Array.from(document.querySelectorAll('#skills-grid .chip.sel')).map(function(c){ return c.textContent.trim(); });
-    var meta   = currentUser.user_metadata || {};
-    var discordName = (meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || meta.preferred_username || null;
+    var name   = getUserDisplayName(currentUser);
 
     var res = await sbInsert('postulaciones', {
       roblox_username:  roblox,
-      discord_username: discordName,
+      discord_username: name,
       discord_user_id:  currentUser.id,
       habilidades:      skills,
       contribucion:     contrib,
@@ -1166,30 +1159,24 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
     document.getElementById('post-success').classList.add('show');
   }
 
-  // ── TESTER (requiere login · 1 por usuario) ──────────────────────────────────
+  // ── TESTER (requiere login · 1 por usuario) ───────────────────────────────────
 
   async function submitTester() {
-    if (!currentUser) {
-      requireLogin('Conecta Discord primero para registrarte');
-      return;
-    }
+    if (!currentUser) { requireLogin('Conecta Discord primero para registrarte'); return; }
 
-    // 1 registration per user
-    var alreadyRegistered = await userAlreadySubmitted('testers');
-    if (alreadyRegistered) {
-      showToast('¡Ya estás registrado como tester! Te avisamos cuando abramos el acceso.');
+    if (await userAlreadySubmitted('testers')) {
+      showToast('¡Ya estás en la lista de testers! Te avisamos cuando abramos el acceso.');
       return;
     }
 
     var roblox = document.getElementById('tester-roblox').value.trim();
     if (!roblox) { flashBorder('tester-roblox'); return; }
 
-    var meta        = currentUser.user_metadata || {};
-    var discordName = (meta.custom_claims && meta.custom_claims.global_name) || meta.full_name || meta.user_name || meta.preferred_username || null;
+    var name = getUserDisplayName(currentUser);
 
     var res = await sbInsert('testers', {
       roblox_username:  roblox,
-      discord_username: discordName,
+      discord_username: name,
       discord_user_id:  currentUser.id
     });
     if (res && res.error) { console.warn('Supabase tester:', res.error.message); return; }
